@@ -1,5 +1,5 @@
 # Vim .swp files
-.swp
+*.swp
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
