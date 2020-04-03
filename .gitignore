@@ -1,5 +1,6 @@
-# Vim .swp files
+*.db  
 *.swp
+poetry.lock
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
