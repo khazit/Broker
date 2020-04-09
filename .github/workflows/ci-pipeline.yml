@@ -13,14 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install poetry and dependencies
-        run: |
-          pip install -U pip
-          pip install poetry
-          poetry install
-        env:
-          POETRY_VIRTUALENVS_CREATE: false
-        #run: ~/.poetry/bin/poetry install
+      - uses: actions/checkout@v2
+      - name: Install poetry
+        uses: dschep/install-poetry-action@v1.3
+      - name: Install dependencies
+        run: ~/.poetry/bin/poetry install
       - name: Run pylint
         run: pylint broker *.py
       - name: Run flake8
