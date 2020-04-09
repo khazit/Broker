@@ -23,6 +23,6 @@ jobs:
       - name: Install dependencies
         run: ~/.poetry/bin/poetry install
       - name: Run pylint
-        run: pylint broker *.py
+        run: pylint broker *.py --ignore setup.py
       - name: Run flake8
-        run: flake8 broker *.py
+        run: flake8 broker *.py --exclude setup.py
