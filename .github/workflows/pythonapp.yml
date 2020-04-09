@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  static analysis:
+  static_analysis:
     runs-on: ubuntu-latest
 
     steps:
