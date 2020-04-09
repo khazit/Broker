@@ -1,4 +1,3 @@
-*.db  
 *.swp
 poetry.lock
 
