@@ -1,0 +1,21 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: 
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  static analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Poetry
+        uses: dschep/install-poetry-action@v1.3
+      - name: pylint3-action
+        uses: LakshitF/pylint3-action@v2
+        with:
+          filename: broker *.py
