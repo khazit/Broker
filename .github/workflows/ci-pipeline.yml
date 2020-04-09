@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  static_analysis:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,3 +26,5 @@ jobs:
         run: pylint broker *.py --ignore setup.py
       - name: Run flake8
         run: flake8 broker *.py --exclude setup.py
+      - name: Run tests
+        run: pytest --cov=broker
