@@ -16,7 +16,7 @@ jobs:
       - name: Install poetry
         uses: dschep/install-poetry-action@v1.3
       - name: Install dependencies
-        run: pwd && ls
+        run: ls
         #run: ~/.poetry/bin/poetry install
       - name: Run pylint
         run: pylint broker *.py
