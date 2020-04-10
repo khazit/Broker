@@ -161,17 +161,19 @@ class Scheduler:
         self.__db_cold_start()
         return 0
 
+    def __db_query(self, query, args=(), one=False):
+        """Wrappes a SQLite3 query"""
+        cursor = self.conn.cursor().execute(query, args)
+        row = cursor.fetchall()
+        cursor.close()
+        return (row[0] if row else None) if one else row
+
     def __db_get_last_id(self):
         """Get value of last used id"""
-        cursor = self.conn.cursor()
-        cursor.execute("SELECT MAX(id) FROM jobs")
-        return cursor.fetchall()[0][0]
+        return self.__db_query("SELECT MAX(id) FROM jobs", one=True)
 
     def __db_warm_start(self):
-        conn = self.conn
-        cursor = conn.cursor()
-        cursor.execute("SELECT * from jobs")
-        all_rows = cursor.fetchall()
+        all_rows = self.__db_query("SELECT * from jobs")
         logging.info("Found %i jobs in database", len(all_rows))
         for row in all_rows:
             # Create a Job instance from a tuple
