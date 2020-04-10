@@ -170,7 +170,7 @@ class Scheduler:
 
     def __db_get_last_id(self):
         """Get value of last used id"""
-        return self.__db_query("SELECT MAX(id) FROM jobs", one=True)
+        return self.__db_query("SELECT MAX(id) FROM jobs", one=True)[0]
 
     def __db_warm_start(self):
         all_rows = self.__db_query("SELECT * from jobs")
