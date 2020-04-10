@@ -41,3 +41,7 @@ def test_add_remove_job(warm_scheduler):
     # Recover original db file
     os.remove("tests/test_data/data.db")
     os.rename("tests/test_data/recovery.db", "tests/test_data/data.db")
+
+def test_get_jobs(warm_scheduler):
+    assert len(warm_scheduler.get_jobs(user="ali")) == 1
+    assert warm_scheduler.get_jobs(user="ben")[0].user == "ben"

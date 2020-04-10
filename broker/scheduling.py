@@ -39,7 +39,7 @@ class Job:
 
     Attributes:
         - identifier: Integer, unique id
-        - user: Integer, user id
+        - user: String, user id
         - status: JobStatus, represents the status of the job
         - description: String, a description of the job
         - epoch_received: Integer, epoch when the job was received
@@ -94,7 +94,7 @@ class Scheduler:
         """Adds a new Job. Called after a POST request from a Client
 
         Args:
-            user: Integer, user id
+            user: String, user id
             payload: Dict, POST request payload
         """
         job = Job(self.last_job_id+1, user, payload)
@@ -119,7 +119,22 @@ class Scheduler:
             idx += 1
         # Remove job from db
         self.__db_remove_job(identifier)
-        self.last_job_id = self.__db_update_last_id()
+        self.last_job_id = self.__db_get_last_id()
+
+    def get_jobs(self, user):
+        """Returns a list the user's jobs
+
+        Args:
+            user: String, unique user identifier
+
+        Returns:
+            List of Job instances
+        '"""
+        res = []
+        for job in self.jobs:
+            if job.user == user:
+                res.append(job)
+        return res
 
     def __init_sqlite_db(self, sqlite_file):
         """Initializes the SQLite database
@@ -131,20 +146,23 @@ class Scheduler:
         """
         logging.info("Initializing database")
         db_exist = isfile(sqlite_file)
-        conn = sqlite3.connect(sqlite_file)
+        conn = sqlite3.connect(sqlite_file, check_same_thread=False)
         self.conn = conn
         if db_exist:
             logging.info("Loading data from %s", sqlite_file)
             self.__db_warm_start()
-            return self.__db_update_last_id()
+            #  if db file exists but empty db
+            if self.__db_get_last_id() is None:
+                return 0
+            return self.__db_get_last_id()
         # if not
         logging.info("Can't find existing db at %s", sqlite_file)
         logging.info("Starting one from scratch")
         self.__db_cold_start()
         return 0
 
-    def __db_update_last_id(self):
-        """Updates value of last id"""
+    def __db_get_last_id(self):
+        """Get value of last used id"""
         cursor = self.conn.cursor()
         cursor.execute("SELECT MAX(id) FROM jobs")
         return cursor.fetchall()[0][0]
@@ -169,7 +187,7 @@ class Scheduler:
         cursor.execute(
             "CREATE TABLE jobs ("
             "id INT PRIMARY KEY,"
-            "user INT,"
+            "user VARCHAR(30),"
             "status INT,"
             "description MEDIUMTEXT,"
             "epoch_received INT"
