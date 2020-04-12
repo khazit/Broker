@@ -67,6 +67,10 @@ class Job:
             "---"
         )
 
+    def to_dict(self):
+        "Returns a Job in Python dict format"
+        return self.__dict__
+
     def to_json(self):
         "Serializes a Job in JSON format"
         return json.dumps(
@@ -130,6 +134,9 @@ class Scheduler:
         Returns:
             List of Job instances
         '"""
+        if user == "all":
+            return self.jobs
+        # if not
         res = []
         for job in self.jobs:
             if job.user == user:

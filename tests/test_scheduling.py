@@ -44,4 +44,5 @@ def test_add_remove_job(warm_scheduler):
 
 def test_get_jobs(warm_scheduler):
     assert len(warm_scheduler.get_jobs(user="ali")) == 1
+    assert len(warm_scheduler.get_jobs(user="all")) == 2
     assert warm_scheduler.get_jobs(user="ben")[0].user == "ben"
