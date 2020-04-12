@@ -1,3 +1,4 @@
+
 *.swp
 poetry.lock
 
@@ -12,6 +13,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+!static/build
 develop-eggs/
 dist/
 downloads/
