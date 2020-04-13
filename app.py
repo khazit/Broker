@@ -2,7 +2,7 @@
 
 
 import logging
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from broker.scheduling import Scheduler
 
 
@@ -11,24 +11,28 @@ schedule = Scheduler("data.db")  # pylint: disable=C0103
 app = Flask(__name__)  # pylint: disable=C0103
 
 
-@app.route("/<user>", methods=["POST"])
-def append_job(user):
+@app.route("/jobs/add", methods=["POST"])
+def append_job():
     """Handles a POST request to append a new job to the scheduler"""
-    logging.info("Received POST request from %s", user)
-    schedule.add_job(user, request.form)
-    return "Added job to schedule\n"
+    print("OUUUUI")
+    logging.info("Received POST request from %s", request.form["user"])
+    schedule.add_job(request.form)
+    response = jsonify(success=True)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
-@app.route("/<user>", methods=["GET"])
+@app.route("/jobs/<user>", methods=["GET"])
 def get_job_list(user):
     """Handles a GET request and returns all the user's jobs"""
     logging.info("Received GET request from %s", user)
-    res = ""
+    res = []
     jobs = schedule.get_jobs(user)
     for job in jobs:
-        res += job.to_json()
-        res += "\n"
-    return res
+        res.append(job.to_dict())
+    response = jsonify(res)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route("/<user>/<job_id>", methods=["DELETE"])
