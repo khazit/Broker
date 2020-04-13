@@ -85,7 +85,7 @@
                         <p>{{ job.description }}</p>
                       </b-modal>
                     </td>
-                    <td><a href="#" class="btn btn-outline-danger btn-xs">Cancel</a></td>
+                    <td><button @click="onRemoveJob(job)" class="btn btn-outline-danger btn-xs">Cancel</button></td>
                   </tr>
                 </tbody>
               </table>
@@ -147,6 +147,23 @@ export default {
       }
       this.addJob(payload)
       this.initForm()
+    },
+    removeJob (jobID) {
+      const path = `http://localhost:5000/jobs/remove/${jobID}`
+      axios.delete(path)
+        .then(() => {
+          this.getJobs()
+          this.message = 'Job removed'
+          this.showMessage = true
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error)
+          this.getJobs()
+        })
+    },
+    onRemoveJob (job) {
+      this.removeJob(job.identifier)
     }
   },
   created () {
