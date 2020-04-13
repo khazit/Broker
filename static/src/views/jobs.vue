@@ -143,7 +143,7 @@ export default {
       this.$refs.addJobModal.hide()
       const payload = {
         user: this.addJobForm.username,
-        command: this.addJobForm.command
+        description: this.addJobForm.command
       }
       this.addJob(payload)
       this.initForm()
