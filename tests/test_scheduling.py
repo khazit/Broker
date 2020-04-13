@@ -30,9 +30,10 @@ def test_add_remove_job(warm_scheduler):
     # Copy file to recover it later
     copyfile("tests/test_data/data.db", "tests/test_data/recovery.db")
     payload = {
+        "user": "RyanTheTemp",
         "description": "Ceci est temporaire"
     }
-    warm_scheduler.add_job("RyanTheTemp", payload)
+    warm_scheduler.add_job(payload)
     assert len(warm_scheduler.jobs) == 3
     assert warm_scheduler.last_job_id == 3
     warm_scheduler.remove_job(3)

@@ -21,15 +21,15 @@ class JobStatus(Enum):
         - SLEEPING: Waiting for a scheduled epoch to run
         - WAITING: Ready to run and waiting for a broker
         - RUNNING: Currently running
-        - TERMINATED: Terminated by a broker
-        - STOPPED: Job stopped itself
+        - TERMINATED: Terminated by itself or by a broker after an error
+        - DONE: Successfully executed
     """
     UNKNOWN = 0
     SLEEPING = 1
     WAITING = 2
     RUNNING = 3
     TERMINATED = 4
-    STOPPED = 5
+    DONE = 5
 
 
 class Job:
@@ -45,14 +45,16 @@ class Job:
         - epoch_received: Integer, epoch when the job was received
     """
 
-    def __init__(self, identifier, user, payload):
+    def __init__(self, identifier, payload):
         self.identifier = identifier
-        self.user = user
-        self.status = JobStatus.WAITING.value
         if payload is None:
+            self.user = None
+            self.status = None
             self.description = None
             self.epoch_received = None
         else:
+            self.user = payload["user"]
+            self.status = JobStatus.WAITING.value
             self.description = payload["description"]
             self.epoch_received = int(time())
 
@@ -94,14 +96,14 @@ class Scheduler:
         self.sqlite_file = sqlite_file
         self.last_job_id = self.__init_sqlite_db(sqlite_file)
 
-    def add_job(self, user, payload):
+    def add_job(self, payload):
         """Adds a new Job. Called after a POST request from a Client
 
         Args:
             user: String, user id
             payload: Dict, POST request payload
         """
-        job = Job(self.last_job_id+1, user, payload)
+        job = Job(self.last_job_id+1, payload)
         self.last_job_id += 1
         # Append Job to list
         self.jobs.append(job)
@@ -185,7 +187,7 @@ class Scheduler:
         for row in all_rows:
             # Create a Job instance from a tuple
             # Not beautiful, need to find a better way to do it
-            job = Job(None, None, None)
+            job = Job(None, None)
             for i, key in enumerate(vars(job)):
                 vars(job)[key] = row[i]
             self.jobs.append(job)
