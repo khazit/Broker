@@ -13,6 +13,7 @@ schedule = Scheduler("data.db")  # pylint: disable=C0103
 app = Flask(__name__)  # pylint: disable=C0103
 cors = CORS(app)  # pylint: disable=C0103
 
+
 @app.route("/jobs/add", methods=["POST"])
 def append_job():
     """Handles a POST request to append a new job to the scheduler"""
