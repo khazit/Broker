@@ -8,7 +8,6 @@
             <router-view></router-view>
           </div>
           <!-- content wrapper ends -->
-          <app-footer/>
         </div>
         <!-- main panel ends -->
       </div>
