@@ -2,6 +2,8 @@
 
 
 import logging
+import json
+from flask_cors import CORS
 from flask import Flask, request, jsonify
 from broker.scheduling import Scheduler
 
@@ -9,16 +11,15 @@ from broker.scheduling import Scheduler
 logging.basicConfig(level=logging.INFO)
 schedule = Scheduler("data.db")  # pylint: disable=C0103
 app = Flask(__name__)  # pylint: disable=C0103
-
+cors = CORS(app)
 
 @app.route("/jobs/add", methods=["POST"])
 def append_job():
     """Handles a POST request to append a new job to the scheduler"""
-    print("OUUUUI")
-    logging.info("Received POST request from %s", request.form["user"])
-    schedule.add_job(request.form)
+    payload = json.loads(request.data)
+    logging.info("Received POST request from %s", payload["user"])
+    schedule.add_job(payload)
     response = jsonify(success=True)
-    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 
