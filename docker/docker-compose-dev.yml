@@ -16,3 +16,5 @@ services:
             - "5000:5000"
         image: broker-api:dev
         container_name: broker-api-dev
+        # volumes:
+            # - "[Absolute path to "api" directory]:/work/"
