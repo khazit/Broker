@@ -4,19 +4,21 @@
 
       <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
         <div class="card card-statistics">
-          <div class="card-body">
-            <div class="d-flex justify-content-between flex-wrap">
-              <div>
-                <i class="mdi mdi-buffer text-danger icon-lg"></i>
-              </div>
-              <div>
-                <p class="card-text text-right">Jobs</p>
-                <div class="fluid-container">
-                  <h3 class="card-title font-weight-bold text-right mb-0">0</h3>
+          <router-link class="nav-link" to="/jobs/">
+            <div class="card-body">
+              <div class="d-flex justify-content-between flex-wrap">
+                <div>
+                  <i class="mdi mdi-buffer text-danger icon-lg"></i>
+                </div>
+                <div>
+                  <p class="card-text text-right">Jobs</p>
+                  <div class="fluid-container">
+                    <h3 class="card-title font-weight-bold text-right mb-0">{{ jobs.length }}</h3>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </router-link>
         </div>
       </div>
 
@@ -61,9 +63,31 @@
 </template>
 
 <script lang="js">
+import axios from 'axios'
 export default {
-  name: 'dashboard'
+  data () {
+    return {
+      jobs: []
+    }
+  },
+  methods: {
+    getJobs () {
+      const path = 'http://localhost:5000/jobs/all'
+      axios.get(path)
+        .then((res) => {
+          this.jobs = res.data
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        })
+    }
+  },
+  created () {
+    this.getJobs()
+  }
 }
+
 </script>
 
 <style scoped lang="scss">
