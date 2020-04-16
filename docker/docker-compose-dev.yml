@@ -2,7 +2,7 @@ version: '3'
 services:
     web: 
         build: 
-            context: .
+            context: ..
             dockerfile: docker/vuejs-dev.Dockerfile
         ports: 
             - "8080:8080"
@@ -10,7 +10,7 @@ services:
         container_name: broker-web-dev
     api:
         build:
-            context: .
+            context: ..
             dockerfile: docker/flask-dev.Dockerfile
         ports:
             - "5000:5000"
