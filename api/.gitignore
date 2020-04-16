@@ -1,4 +1,5 @@
-
+*.db
+!test_data
 *.swp
 poetry.lock
 
