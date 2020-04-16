@@ -3,7 +3,8 @@ import pytest
 import os
 from shutil import copyfile
 from os.path import isfile
-from broker.scheduling import Job, Scheduler
+from broker.scheduling import Scheduler
+from broker.utils import Job
 
 @pytest.fixture
 def warm_scheduler():

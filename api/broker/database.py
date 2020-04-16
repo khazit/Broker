@@ -4,7 +4,7 @@
 import logging
 import sqlite3
 from os.path import isfile
-from broker import scheduling
+from broker.utils import Job
 
 
 class DataBaseManager():
@@ -73,7 +73,7 @@ class DataBaseManager():
         for row in all_rows:
             # Create a Job instance from a tuple
             # Not beautiful, need to find a better way to do it
-            job = scheduling.Job(None, None)
+            job = Job(None, None)
             for i, key in enumerate(vars(job)):
                 vars(job)[key] = row[i]
             jobs.append(job)
