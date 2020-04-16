@@ -16,12 +16,12 @@ def cold_scheduler():
     return Scheduler("tests/test_data/no_data.db")
 
 def test_warm_init_sqlite_db(warm_scheduler):
-    assert warm_scheduler.last_job_id == 2
+    assert warm_scheduler.db_manager.last_id == 2
     assert len(warm_scheduler.jobs) == 2
    
 def test_cold_init_sqlite_db(cold_scheduler):
     assert isfile("tests/test_data/no_data.db")
-    assert cold_scheduler.last_job_id == 0 
+    assert cold_scheduler.db_manager.last_id == 0 
     assert len(cold_scheduler.jobs) == 0
     if isfile("tests/test_data/no_data.db"):
         os.remove("tests/test_data/no_data.db")
@@ -35,10 +35,10 @@ def test_add_remove_job(warm_scheduler):
     }
     warm_scheduler.add_job(payload)
     assert len(warm_scheduler.jobs) == 3
-    assert warm_scheduler.last_job_id == 3
+    assert warm_scheduler.db_manager.last_id == 3
     warm_scheduler.remove_job(3)
     assert len(warm_scheduler.jobs) == 2
-    assert warm_scheduler.last_job_id == 2
+    assert warm_scheduler.db_manager.last_id == 2
     # Recover original db file
     os.remove("tests/test_data/data.db")
     os.rename("tests/test_data/recovery.db", "tests/test_data/data.db")
