@@ -9,14 +9,13 @@ from enum import Enum
 class JobStatus(Enum):
     """Represent the status of a job
 
-        - UNKNOWN: Given that a Runner can run on a different network,
-            the Scheduler asks for an update on the status of all the jobs
-            regularly. A Job has an unknown status if the connection
-            between the Scheduler and the Runner is lost.
+        - UNKNOWN: Given that a runner can run on a different network,
+            a job has an unknown status if the connection between the Scheduler 
+            and the Runner can't be established'.
         - SLEEPING: Waiting for a scheduled epoch to run
-        - WAITING: Ready to run and waiting for a broker
+        - WAITING: Ready to run and waiting for a runner
         - RUNNING: Currently running
-        - TERMINATED: Terminated by itself or by a broker after an error
+        - TERMINATED: Terminated by itself or by a runner after an error
         - DONE: Successfully executed
     """
     UNKNOWN = 0
