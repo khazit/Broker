@@ -11,7 +11,9 @@ class DataBaseManager():
     """Wrapper for SQLite3 related operations
 
     Attributes:
-
+        sqlite_file: String, path of the SQLite database file
+        conn: SQLite connexion object
+        last_id: Integer, last id used in the jobs table
     """
 
     def __init__(self, sqlite_file="data.db"):
@@ -24,9 +26,6 @@ class DataBaseManager():
         """Initializes the SQLite database
 
         If a database is not found, create a new one with an empty table
-
-        Args:
-            sqlite_file (str): Path to the .db file
 
         Returns:
             List of Jobs from db file (empty list if cold start)
