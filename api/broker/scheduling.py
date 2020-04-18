@@ -4,7 +4,7 @@ Scheduling module. Controls the order in which the jobs are executed.
 
 
 from broker.database import DataBaseManager
-from broker.utils import Job
+from broker.utils import Job, JobStatus
 
 
 class Scheduler:
@@ -14,6 +14,12 @@ class Scheduler:
     between users and Runners
 
     Attributes:
+        db_manager: DataBaseManager, wrapper for SQLite3 related methods
+        jobs: List, list of Job objects
+
+    NOTE: A list is not a good data structure here. For now, it's a
+        placeholder. But in the future, there need to be something that acts
+        like a queue, but which could also be accessed in O(1) (using ids)
     """
     def __init__(self, sqlite_file="data.db"):
         self.db_manager = DataBaseManager(sqlite_file)
@@ -48,23 +54,51 @@ class Scheduler:
         # Remove job from db
         self.db_manager.db_remove_job(identifier)
 
-    def get_jobs(self, user):
-        """Returns a list the user's jobs
+    def get_jobs(self, active=True):
+        """Returns a list of all jobs
 
         Args:
-            user: String, unique user identifier
+            active: Boolean, if true returns only active jobs
 
         Returns:
             List of Job instances
         '"""
-        if user == "all":
+        if active:
             return self.jobs
         # if not
-        res = []
+        return self.db_manager.db_warm_start(active=False)
+
+    def get_next(self):
+        """Returns the next job on the queue
+
+        Returns:
+            Job object
+        """
+        if len(self.jobs) == 0:
+            return None
+        return self.jobs[0]
+
+    def update_job_status(self, identifier, status):
+        """Updates a job's status.
+
+        Typically a request coming from a runner
+        """
+        status = getattr(JobStatus, status).value
+        # Update the status in memory
         for job in self.jobs:
-            if job.user == user:
-                res.append(job)
-        return res
+            if job.identifier == identifier:
+                job.status = status
+                break
+        self.__refresh_jobs()
+        # Update the status on the SQL table
+        self.db_manager.db_update_job_status(identifier, status)
+
+    def __refresh_jobs(self):
+        """Drops inactive jobs from memory"""
+        for idx, job in enumerate(self.jobs):
+            if job.status != JobStatus.SLEEPING.value and \
+               job.status != JobStatus.WAITING.value:
+                self.jobs.pop(idx)
 
     def __str__(self):
         res = f"Managing {len(self.jobs)} jobs:\n"

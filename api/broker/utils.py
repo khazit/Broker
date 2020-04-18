@@ -10,7 +10,7 @@ class JobStatus(Enum):
     """Represent the status of a job
 
         - UNKNOWN: Given that a runner can run on a different network,
-            a job has an unknown status if the connection between the Scheduler 
+            a job has an unknown status if the connection between the Scheduler
             and the Runner can't be established'.
         - SLEEPING: Waiting for a scheduled epoch to run
         - WAITING: Ready to run and waiting for a runner

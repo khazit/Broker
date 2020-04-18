@@ -57,18 +57,28 @@ class DataBaseManager():
         return (row[0] if row else None) if one else row
 
     def db_get_last_id(self):
-        """Get value of last used id"""
+        """Gets value of last used id"""
         return self.db_query("SELECT MAX(id) FROM jobs", one=True)[0]
 
-    def db_warm_start(self):
+    def db_warm_start(self, active=True):
         """Warm start from an existing db file
+
+        Args:
+            active: Boolean, if true, returns only active jobs
 
         Returns:
             List of Jobs (could be empty if db file empty)
         """
         jobs = []
-        all_rows = self.db_query("SELECT * from jobs")
-        logging.info("Found %i jobs in database", len(all_rows))
+        if active:
+            all_rows = self.db_query(
+                "SELECT * FROM jobs WHERE status = 2 or status = 1"
+            )
+            logging.info("Found %i active jobs in database", len(all_rows))
+        else:
+            all_rows = self.db_query(
+                "SELECT * FROM jobs"
+            )
         for row in all_rows:
             # Create a Job instance from a tuple
             # Not beautiful, need to find a better way to do it
@@ -99,7 +109,7 @@ class DataBaseManager():
         return []
 
     def db_add_job(self, job):
-        """Add a job entry to the database given an identifier"""
+        """Adds a job entry to the database given an identifier"""
         conn = self.conn
         cursor = conn.cursor()
         cursor.execute(
@@ -115,9 +125,18 @@ class DataBaseManager():
         self.last_id += 1
 
     def db_remove_job(self, identifier):
-        """Remove a job entry from the database given an identifier"""
+        """Removes a job entry from the database given an identifier"""
         conn = self.conn
         cursor = conn.cursor()
         cursor.execute(f"DELETE FROM jobs WHERE id = {identifier}")
         conn.commit()
         self.last_id -= 1
+
+    def db_update_job_status(self, identifier, status):
+        """Updates a job's status'"""
+        conn = self.conn
+        cursor = conn.cursor()
+        cursor.execute(
+            f"UPDATE jobs SET status={status} WHERE id={identifier}"
+        )
+        conn.commit()
