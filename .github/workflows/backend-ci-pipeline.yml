@@ -18,11 +18,11 @@ jobs:
         run: ~/.poetry/bin/poetry install
         working-directory: ./api
       - name: Run pylint
-        run: pylint broker *.py --ignore setup.py 
-        working-directory: ./api
+        run: pylint api/broker *.py runner/runner.py --ignore setup.py 
+        working-directory: .
       - name: Run flake8
-        run: flake8 broker *.py --exclude setup.py
-        working-directory: ./api
+        run: flake8 api/broker *.py runner/runner.py --exclude setup.py
+        working-directory: .
       - name: Run tests
         run: pytest . --cov=broker
         working-directory: ./api
