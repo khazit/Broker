@@ -1,0 +1,28 @@
+name: Backend CI Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v1.2.0
+        with:
+          python-version: 3.7
+      - name: Install poetry
+        uses: dschep/install-poetry-action@v1.3
+      - name: Install dependencies
+        run: ~/.poetry/bin/poetry install
+        working-directory: ./api
+      - name: Run pylint
+        run: pylint broker *.py --ignore setup.py 
+        working-directory: ./api
+      - name: Run flake8
+        run: flake8 broker *.py --exclude setup.py
+        working-directory: ./api
+      - name: Run tests
+        run: pytest . --cov=broker
+        working-directory: ./api

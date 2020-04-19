@@ -1,0 +1,20 @@
+version: '3'
+services:
+    web: 
+        build: 
+            context: ..
+            dockerfile: docker/vuejs-dev.Dockerfile
+        ports: 
+            - "8080:8080"
+        image: broker-web:dev
+        container_name: broker-web-dev
+    api:
+        build:
+            context: ..
+            dockerfile: docker/flask-dev.Dockerfile
+        ports:
+            - "5000:5000"
+        image: broker-api:dev
+        container_name: broker-api-dev
+        # volumes:
+            # - "[Absolute path to "api" directory]:/work/"
