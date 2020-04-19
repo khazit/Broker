@@ -4,8 +4,8 @@
       <b-navbar-nav class="header-links d-none d-md-flex">
         <b-nav-item><router-link class="nav-link" to="/dashboard/"><i class=" mdi mdi-view-dashboard"></i>Dashboards</router-link></b-nav-item>
         <b-nav-item><router-link class="nav-link" to="/jobs/"><i class="mdi mdi-buffer"></i>Jobs</router-link></b-nav-item>
-        <b-nav-item><router-link class="nav-link" to="/users/"><i class="mdi mdi-account-multiple"></i>Users</router-link></b-nav-item>
-        <b-nav-item><router-link class="nav-link" to="/runners/"><i class="mdi mdi-dns"></i>Runners</router-link></b-nav-item>
+        <b-nav-item><i class="mdi mdi-account-multiple"></i>Users</b-nav-item>
+        <b-nav-item><i class="mdi mdi-dns"></i>Runners</b-nav-item>
       </b-navbar-nav>
     </div>
   </b-navbar>
