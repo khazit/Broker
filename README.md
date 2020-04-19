@@ -13,8 +13,10 @@ According to Wikipedia:
 
 In the same way, the global architecture of the system was designed around the
 Scheduler, the API that connects users with runners. 
- 
-![System Architecture](architecture.png)
+
+<p align="center">
+  <img src="architecture.png">
+</p>
 
 Theoretically, the system could scale to multiple runners. But has yet to be
 tested.
