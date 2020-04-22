@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Broker's' command line client. Used as an alternative
+# to the Web UI
+
+function add() {
+    curl -H "Content-Type: application/json" \
+    -d '{"user":"'$1'","description":"'$2'"}' \
+    localhost:5000/jobs/add
+}
+
+function list() {
+    curl localhost:5000/jobs | python -m json.tool 
+}
+
+function remove() {
+    curl -X DELETE localhost:5000/jobs/remove/$1
+}
+
+if [[ $1 == "add" ]]; then 
+    add $2 $3
+elif [[ $1 == "list" ]]; then
+    list
+elif [[ $1 == "remove" ]]; then
+    remove $2
+elif [[ $1 == "help" ]]; then
+    echo "To add a new job: broker add [user] [command]"
+    echo "To show all jobs: broker list"
+    echo "To remove a job: broker remove [id]"
+fi

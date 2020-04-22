@@ -36,6 +36,14 @@ And run the app:
 $ docker-compose -f docker/docker-compose-dev.yml up
 ```
 
+You can either use the Web UI ...
+
+<p align="center">
+  <img src="web_ui.png">
+</p>
+
+... or the bash script `broker` for command line usage.
+
 ### Runners
 Runners are single file python scripts, that you can run directly on your
 python env or on a docker container using `docker/runner-dev.Dockerfile`.
