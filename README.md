@@ -52,7 +52,7 @@ The only dependancy is `requests`.
 Using poetry:
 ```
 $ cd runner
-$ poetry run python runner.py --scheduler_ip [IP] --scheduler_port [PORT]
+$ python runner.py --scheduler_ip [IP] --scheduler_port [PORT]
 ```
 
 ## Caveats
