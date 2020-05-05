@@ -34,6 +34,8 @@ def test_add_remove_job(warm_scheduler):
         "user": "RyanTheTemp",
         "description": "Ceci est temporaire"
     }
+    with pytest.raises(IndexError):
+        warm_scheduler.remove_job(270)
     warm_scheduler.add_job(payload)
     assert len(warm_scheduler.jobs) == 4
     assert warm_scheduler.db_manager.last_id == 9
