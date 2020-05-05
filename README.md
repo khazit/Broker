@@ -49,7 +49,6 @@ Runners are single file python scripts, that you can run directly on your
 python env or on a docker container using `docker/runner-dev.Dockerfile`.
 The only dependancy is `requests`.
 
-Using poetry:
 ```
 $ cd runner
 $ python runner.py --scheduler_ip [IP] --scheduler_port [PORT]
