@@ -41,18 +41,26 @@ class Scheduler:
     def remove_job(self, identifier):
         """Removes an existing Job from Scheduler
 
+        NOTE: The job needs to be WAITING or SLEEPING
+
         Args:
             identifier: Integer, a unique indentifier
         """
-        # Remove Job from list
         idx = 0
         while idx < len(self.jobs):
             if self.jobs[idx].identifier == identifier:
+                # Remove from list
                 self.jobs.pop(idx)
-                break
+                # Remove from db
+                self.db_manager.db_remove_job(identifier)
+                return
             idx += 1
-        # Remove job from db
-        self.db_manager.db_remove_job(identifier)
+        # If job not in the list
+        if idx == len(self.jobs):
+            raise IndexError(
+                f"Job #{identifier} not found. "
+                "Needs to be WAITING or SLEEPING to be removed"
+            )
 
     def get_jobs(self, active=True):
         """Returns a list of all jobs

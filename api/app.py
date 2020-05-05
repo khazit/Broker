@@ -33,8 +33,11 @@ def append_job():
 def remove_job(job_id):
     """Handles a DELETE request to remove a job from the schedule"""
     logging.info("Received DELETE request to remove  %s", job_id)
-    schedule.remove_job(int(job_id))
-    return "Removed job from schedule\n"
+    try:
+        schedule.remove_job(int(job_id))
+        return jsonify(success=True)
+    except IndexError as err:
+        return jsonify({"error": str(err)})
 
 
 @app.route("/jobs", methods=["GET"])
