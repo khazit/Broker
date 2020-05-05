@@ -4,10 +4,13 @@
 # to the Web UI
 
 function add() {
+    user="$1"
+    description="${@:2}"
     curl -H "Content-Type: application/json" \
-    -d '{"user":"'$1'","description":"'$2'"}' \
+    -d '{"user":"'$1'","description":"'"$description"'"}' \
     localhost:5000/jobs/add
 }
+
 
 function list() {
     curl localhost:5000/jobs | python -m json.tool 
