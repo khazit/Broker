@@ -40,17 +40,11 @@ class Job:
     """
 
     def __init__(self, identifier, payload):
-        self.identifier = identifier
-        if payload is None:
-            self.user = None
-            self.status = None
-            self.description = None
-            self.epoch_received = None
-        else:
-            self.user = payload["user"]
-            self.status = JobStatus.WAITING.value
-            self.description = payload["description"]
-            self.epoch_received = int(time())
+        self.identifier = identifier if payload else None
+        self.user = payload["user"] if payload else None
+        self.status = JobStatus.WAITING.value if payload else None
+        self.description = payload["description"] if payload else None
+        self.epoch_received = int(time()) if payload else None
 
     def __str__(self):
         return (
