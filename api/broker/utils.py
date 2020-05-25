@@ -2,8 +2,12 @@
 
 
 import json
-from time import time
 from enum import Enum
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+
+
+Base = declarative_base()
 
 
 class JobStatus(Enum):
@@ -26,7 +30,7 @@ class JobStatus(Enum):
     DONE = 5
 
 
-class Job:
+class Job(Base):
     """A unit of work
     Is given by a user to the Scheduler, that will pass it (at the
     right time) to an available Runner to be run.
@@ -39,12 +43,15 @@ class Job:
         - epoch_received: Integer, epoch when the job was received
     """
 
-    def __init__(self, identifier, payload):
-        self.identifier = identifier if payload else None
-        self.user = payload["user"] if payload else None
-        self.status = JobStatus.WAITING.value if payload else None
-        self.description = payload["description"] if payload else None
-        self.epoch_received = int(time()) if payload else None
+    __tablename__ = "jobs"
+    identifier = Column(Integer, primary_key=True)
+    user = Column(String)
+    status = Column(Integer)
+    description = Column(Integer)
+    epoch_received = Column(Integer)
+
+    def __repr__(self):
+        return f"Job<id={self.identifier}, status={self.status}>"
 
     def __str__(self):
         return (

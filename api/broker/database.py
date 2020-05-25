@@ -2,28 +2,38 @@
 
 
 import logging
-import sqlite3
 from os.path import isfile
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql.expression import or_, func
 from broker.utils import Job
+# pylint: disable=no-member
+
+
+Session = sessionmaker()
 
 
 class DataBaseManager():
-    """Wrapper for SQLite3 related operations
+    """Wrapper for SQL database related operations
 
     Attributes:
-        sqlite_file: String, path of the SQLite database file
-        conn: SQLite connexion object
-        last_id: Integer, last id used in the jobs table
+        sqlite_file (string): Path of the SQLite database file
+        engine (sqlalchemy.engine.Engine): Database engine
+        session (sqlalchemy.orm.session.Session): Session
+        last_id (id): Last ID used
     """
 
     def __init__(self, sqlite_file="data.db"):
         self.sqlite_file = sqlite_file
-        self.conn = None
+        self.engine = create_engine(f"sqlite:///{self.sqlite_file}")
+        Session.configure(bind=self.engine)  # Bind engine to session
+        Job.metadata.create_all(self.engine)  # Create db if needed
+        self.session = Session()
         self.last_id = None
-        self.init_sqlite_db()
+        self.init_db()
 
-    def init_sqlite_db(self):
-        """Initializes the SQLite database
+    def init_db(self):
+        """Initializes the database
 
         If a database is not found, create a new one with an empty table
 
@@ -32,8 +42,6 @@ class DataBaseManager():
         """
         logging.info("Initializing database")
         db_exist = isfile(self.sqlite_file)
-        conn = sqlite3.connect(self.sqlite_file, check_same_thread=False)
-        self.conn = conn
         if db_exist:
             logging.info("Loading data from %s", self.sqlite_file)
             jobs = self.db_warm_start()
@@ -45,20 +53,22 @@ class DataBaseManager():
         else:
             logging.info("Can't find existing db at %s", self.sqlite_file)
             logging.info("Starting one from scratch")
-            jobs = self.db_cold_start()
+            jobs = []
             self.last_id = 0
         return jobs
 
-    def db_query(self, query, args=(), one=False):
-        """Wrappes a SQLite3 query"""
-        cursor = self.conn.cursor().execute(query, args)
-        row = cursor.fetchall()
-        cursor.close()
-        return (row[0] if row else None) if one else row
-
     def db_get_last_id(self):
         """Gets value of last used id"""
-        return self.db_query("SELECT MAX(id) FROM jobs", one=True)[0]
+        return self.session.query(func.max(Job.identifier)).as_scalar()
+
+    def db_get_n_jobs(self, active=True):
+        """Get number of jobs in database"""
+        if active:
+            return self.session.query(Job).\
+                filter(or_(Job.status == 1, Job.status == 2)).\
+                count()
+        return self.session.query(Job).\
+            count()
 
     def db_warm_start(self, active=True):
         """Warm start from an existing db file
@@ -71,72 +81,29 @@ class DataBaseManager():
         """
         jobs = []
         if active:
-            all_rows = self.db_query(
-                "SELECT * FROM jobs WHERE status = 2 or status = 1"
-            )
-            logging.info("Found %i active jobs in database", len(all_rows))
+            jobs = self.session.query(Job).\
+                filter(or_(Job.status == 1, Job.status == 2)).\
+                all()
+            logging.info("Found %i active jobs in database", len(jobs))
         else:
-            all_rows = self.db_query(
-                "SELECT * FROM jobs"
-            )
-        for row in all_rows:
-            # Create a Job instance from a tuple
-            # Not beautiful, need to find a better way to do it
-            job = Job(None, None)
-            for i, key in enumerate(vars(job)):
-                vars(job)[key] = row[i]
-            jobs.append(job)
+            for job in self.session.query(Job):
+                jobs.append(job)
         return jobs
-
-    def db_cold_start(self):
-        """Cold start: creates a database file with an empty table
-
-        Returns:
-            Empty list
-        """
-        conn = self.conn
-        cursor = conn.cursor()
-        cursor.execute(
-            "CREATE TABLE jobs ("
-            "id INT PRIMARY KEY,"
-            "user VARCHAR(30),"
-            "status INT,"
-            "description MEDIUMTEXT,"
-            "epoch_received INT"
-            ")"
-        )
-        conn.commit()
-        return []
 
     def db_add_job(self, job):
         """Adds a job entry to the database given an identifier"""
-        conn = self.conn
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO jobs VALUES ("
-            f"'{job.identifier}',"
-            f"'{job.user}',"
-            f"'{job.status}',"
-            f"'{job.description}',"
-            f"'{job.epoch_received}'"
-            ")"
-        )
-        conn.commit()
+        self.session.add(job)
+        self.session.commit()
         self.last_id += 1
 
     def db_remove_job(self, identifier):
         """Removes a job entry from the database given an identifier"""
-        conn = self.conn
-        cursor = conn.cursor()
-        cursor.execute(f"DELETE FROM jobs WHERE id = {identifier}")
-        conn.commit()
+        self.session.query(Job).filter_by(identifier=identifier).delete()
+        self.session.commit()
         self.last_id -= 1
 
     def db_update_job_status(self, identifier, status):
-        """Updates a job's status'"""
-        conn = self.conn
-        cursor = conn.cursor()
-        cursor.execute(
-            f"UPDATE jobs SET status={status} WHERE id={identifier}"
-        )
-        conn.commit()
+        """Updates a job's status"""
+        job = self.session.query(Job).filter_by(identifier=identifier).first()
+        job.status = status
+        self.session.commit()
