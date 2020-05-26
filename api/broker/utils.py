@@ -2,6 +2,8 @@
 
 
 import json
+import logging
+from time import time
 from enum import Enum
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
@@ -49,6 +51,27 @@ class Job(Base):
     status = Column(Integer)
     description = Column(Integer)
     epoch_received = Column(Integer)
+
+    @staticmethod
+    def from_payload(payload):
+        """Create a Job instance given a payload dict
+
+        Args:
+            payload (dict): Job info dict
+
+        Returns:
+            (broker.utils.Job) instance
+        """
+        try:
+            job = Job(
+                user=payload["user"],
+                status=JobStatus.WAITING.value,
+                description=payload["description"],
+                epoch_received=int(time()),
+            )
+            return job
+        except KeyError:
+            logging.error("Incorrect payload. Can't create job instance")
 
     def __repr__(self):
         return f"Job<id={self.identifier}, status={self.status}>"
