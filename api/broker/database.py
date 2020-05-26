@@ -59,10 +59,24 @@ class DataBaseManager():
 
     def db_get_last_id(self):
         """Gets value of last used id"""
-        return self.session.query(func.max(Job.identifier)).as_scalar()
+        return self.session.query(func.max(Job.identifier)).scalar()
 
-    def db_get_n_jobs(self, active=True):
-        """Get number of jobs in database"""
+    def db_get_jobs(self, active=True):
+        """Returns jobs from the database
+
+        Args:
+            active (bool): If true, returns active jobs only"""
+        if active:
+            return self.session.query(Job).\
+                filter(or_(Job.status == 1, Job.status == 2)).\
+                all()
+        return self.session.query(Job).all()
+
+    def db_n_jobs(self, active=True):
+        """Counts number of jobs in database
+
+        Args:
+            active (bool): If true, count active jobs only"""
         if active:
             return self.session.query(Job).\
                 filter(or_(Job.status == 1, Job.status == 2)).\
@@ -70,37 +84,28 @@ class DataBaseManager():
         return self.session.query(Job).\
             count()
 
-    def db_warm_start(self, active=True):
+    def db_warm_start(self):
         """Warm start from an existing db file
 
-        Args:
-            active: Boolean, if true, returns only active jobs
-
         Returns:
-            List of Jobs (could be empty if db file empty)
+            (list) Active jobs
         """
-        jobs = []
-        if active:
-            jobs = self.session.query(Job).\
-                filter(or_(Job.status == 1, Job.status == 2)).\
-                all()
-            logging.info("Found %i active jobs in database", len(jobs))
-        else:
-            for job in self.session.query(Job):
-                jobs.append(job)
+        jobs = self.db_get_jobs(active=True)
+        logging.info("Found %i active jobs in database", len(jobs))
         return jobs
 
     def db_add_job(self, job):
         """Adds a job entry to the database given an identifier"""
+        job.identifier = self.last_id + 1
         self.session.add(job)
         self.session.commit()
-        self.last_id += 1
+        self.last_id = self.db_get_last_id()
 
     def db_remove_job(self, identifier):
         """Removes a job entry from the database given an identifier"""
         self.session.query(Job).filter_by(identifier=identifier).delete()
         self.session.commit()
-        self.last_id -= 1
+        self.last_id = self.db_get_last_id()
 
     def db_update_job_status(self, identifier, status):
         """Updates a job's status"""
