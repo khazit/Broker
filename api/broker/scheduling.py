@@ -44,21 +44,8 @@ class Scheduler:
         Args:
             identifier: Integer, a unique indentifier
         """
-        idx = 0
-        while idx < len(self.jobs):
-            if self.jobs[idx].identifier == identifier:
-                # Remove from list
-                self.jobs.pop(idx)
-                # Remove from db
-                self.db_manager.db_remove_job(identifier)
-                return
-            idx += 1
-        # If job not in the list
-        if idx == len(self.jobs):
-            raise IndexError(
-                f"Job #{identifier} not found. "
-                "Needs to be WAITING or SLEEPING to be removed"
-            )
+        self.db_manager.db_remove_job(identifier)
+        self.__refresh_jobs()
 
     def get_jobs(self, active=True):
         """Returns a list of all jobs
