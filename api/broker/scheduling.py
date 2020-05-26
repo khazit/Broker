@@ -4,7 +4,7 @@ Scheduling module. Controls the order in which the jobs are executed.
 
 
 from broker.database import DataBaseManager
-from broker.utils import Job, JobStatus
+from broker.utils import JobStatus
 
 
 class Scheduler:
@@ -23,20 +23,18 @@ class Scheduler:
     """
     def __init__(self, sqlite_file="data.db"):
         self.db_manager = DataBaseManager(sqlite_file)
-        self.jobs = self.db_manager.init_sqlite_db()
+        self.jobs = self.db_manager.init_db()
 
-    def add_job(self, payload):
+    def add_job(self, job):
         """Adds a new Job. Called after a POST request from a Client
 
         Args:
             user: String, user id
             payload: Dict, POST request payload
         """
-        job = Job(self.db_manager.last_id+1, payload)
-        # Append Job to list
-        self.jobs.append(job)
         # Update db
         self.db_manager.db_add_job(job)
+        self.__refresh_jobs()
 
     def remove_job(self, identifier):
         """Removes an existing Job from Scheduler
@@ -66,7 +64,7 @@ class Scheduler:
         """Returns a list of all jobs
 
         Args:
-            active: Boolean, if true returns only active jobs
+            active (bool): if true returns only active jobs
 
         Returns:
             List of Job instances
@@ -74,7 +72,7 @@ class Scheduler:
         if active:
             return self.jobs
         # if not
-        return self.db_manager.db_warm_start(active=False)
+        return self.db_manager.db_get_jobs(active=False)
 
     def get_next(self):
         """Returns the next job on the queue
@@ -103,10 +101,7 @@ class Scheduler:
 
     def __refresh_jobs(self):
         """Drops inactive jobs from memory"""
-        for idx, job in enumerate(self.jobs):
-            if job.status != JobStatus.SLEEPING.value and \
-               job.status != JobStatus.WAITING.value:
-                self.jobs.pop(idx)
+        self.jobs = self.db_manager.db_get_jobs()
 
     def __str__(self):
         res = f"Managing {len(self.jobs)} jobs:\n"
