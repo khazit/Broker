@@ -2,8 +2,14 @@
 
 
 import json
+import logging
 from time import time
 from enum import Enum
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+
+
+Base = declarative_base()
 
 
 class JobStatus(Enum):
@@ -26,7 +32,7 @@ class JobStatus(Enum):
     DONE = 5
 
 
-class Job:
+class Job(Base):
     """A unit of work
     Is given by a user to the Scheduler, that will pass it (at the
     right time) to an available Runner to be run.
@@ -39,18 +45,36 @@ class Job:
         - epoch_received: Integer, epoch when the job was received
     """
 
-    def __init__(self, identifier, payload):
-        self.identifier = identifier
-        if payload is None:
-            self.user = None
-            self.status = None
-            self.description = None
-            self.epoch_received = None
-        else:
-            self.user = payload["user"]
-            self.status = JobStatus.WAITING.value
-            self.description = payload["description"]
-            self.epoch_received = int(time())
+    __tablename__ = "jobs"
+    identifier = Column(Integer, primary_key=True)
+    user = Column(String)
+    status = Column(Integer)
+    description = Column(Integer)
+    epoch_received = Column(Integer)
+
+    @staticmethod
+    def from_payload(payload):
+        """Create a Job instance given a payload dict
+
+        Args:
+            payload (dict): Job info dict
+
+        Returns:
+            (broker.utils.Job) instance
+        """
+        try:
+            job = Job(
+                user=payload["user"],
+                status=JobStatus.WAITING.value,
+                description=payload["description"],
+                epoch_received=int(time()),
+            )
+            return job
+        except KeyError:
+            logging.error("Incorrect payload. Can't create job instance")
+
+    def __repr__(self):
+        return f"Job<id={self.identifier}, status={self.status}>"
 
     def __str__(self):
         return (
