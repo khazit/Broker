@@ -70,8 +70,8 @@ def test_add_job(warm_scheduler, warm_empty_scheduler, cold_scheduler):
     
 def test_remove_jobs(warm_scheduler):
      # Index out of range test
-    with pytest.raises(IndexError):
-        warm_scheduler.remove_job(270)
+    warm_scheduler.remove_job(270)
+    assert len(warm_scheduler.jobs) == 3
 
     warm_scheduler.remove_job(8)
     assert len(warm_scheduler.jobs) == 2

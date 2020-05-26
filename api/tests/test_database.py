@@ -82,11 +82,19 @@ def test_remove_job(warm_db, warm_empty_db):
     assert warm_db.db_n_jobs() == 3
     assert warm_db.db_n_jobs(active=False) == 5
 
+    warm_db.db_remove_job(162)
+    assert warm_db.db_n_jobs() == 3
+    assert warm_db.db_n_jobs(active=False) == 5
+    
     warm_db.db_remove_job(7)
     assert warm_db.db_n_jobs() == 2
     assert warm_db.db_n_jobs(active=False) == 4
 
     warm_empty_db.db_remove_job(0) 
+    assert warm_empty_db.db_n_jobs() == 0
+    assert warm_empty_db.db_n_jobs(active=False) == 0
+
+    warm_empty_db.db_remove_job(270) 
     assert warm_empty_db.db_n_jobs() == 0
     assert warm_empty_db.db_n_jobs(active=False) == 0
 
