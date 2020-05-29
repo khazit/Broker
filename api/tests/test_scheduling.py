@@ -75,7 +75,7 @@ def test_get_jobs(warm_scheduler):
 
 def test_get_next(warm_scheduler):
     assert warm_scheduler.get_next().user == "tyler@mail.com"
-    assert warm_scheduler.get_next().description == "sleep for 10 seconds"
+    assert warm_scheduler.get_next().description == "run an experiment"
 
 def test_update_status(warm_scheduler):
     warm_scheduler.update_job_status(0, "RUNNING")

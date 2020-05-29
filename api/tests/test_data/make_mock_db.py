@@ -18,8 +18,8 @@ if __name__ == "__main__":
         "'0',"
         "'tyler@mail.com',"
         "'2',"
-        "'sleep for 10 seconds',"
-        "'sleep 10'"
+        "'run an experiment',"
+        "'docker run --gpus all --privileged=true -v /path/to/somewhere/or/something/:/work -v /home/path/to/some/data/set/data/:/data --name train --rm tensorflow python run_experiments.py experiments/experiment.json'"
         ")"
     )
     cursor.execute(
