@@ -3,7 +3,6 @@
 
 import json
 import logging
-from time import time
 from enum import Enum
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
@@ -49,8 +48,8 @@ class Job(Base):
     identifier = Column(Integer, primary_key=True)
     user = Column(String)
     status = Column(Integer)
-    description = Column(Integer)
-    epoch_received = Column(Integer)
+    description = Column(String)
+    command = Column(String)
 
     @staticmethod
     def from_payload(payload):
@@ -67,7 +66,7 @@ class Job(Base):
                 user=payload["user"],
                 status=JobStatus.WAITING.value,
                 description=payload["description"],
-                epoch_received=int(time()),
+                command=payload["command"],
             )
             return job
         except KeyError:
@@ -82,7 +81,7 @@ class Job(Base):
             f"Job #{self.identifier}\n"
             f"User: {self.user}\n"
             f"Status: {self.status}\n"
-            f"Received at {self.epoch_received}\n"
+            f"Command: {self.command}\n"
             f"Description: {self.description}\n"
             "---"
         )
