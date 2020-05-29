@@ -11,15 +11,6 @@ from broker.utils import Job
 
 @pytest.fixture
 def warm_scheduler():
-    """
-    id	user	status	description	            epoch_received
-    0	Tyler	2	    sleep 10	            270270270
-    3	Boy	    0	    echo "I speak giberish"	2702700014
-    4	Scott	4	    df -h	                174585230
-    5	Jim	    5	    echo "He done"	        155647850
-    7	Creator	2	    docker ps	            14233658740
-    8	Good	2	    sleep 15	            1244
-    """
     copyfile("tests/test_data/data.db", "tests/test_data/backup")
     yield Scheduler("tests/test_data/data.db")
     os.remove("tests/test_data/data.db")
@@ -53,7 +44,8 @@ def test_cold_init(cold_scheduler):
 def test_add_job(warm_scheduler, warm_empty_scheduler, cold_scheduler):
     payload = {
         "user": "RyanTheTemp",
-        "description": "ls /tmp"
+        "command": "ls /tmp",
+        "description": "Unix joke"
     }
     
     warm_scheduler.add_job(Job.from_payload(payload))
@@ -77,18 +69,14 @@ def test_remove_jobs(warm_scheduler):
     assert len(warm_scheduler.jobs) == 2
     assert warm_scheduler.db_manager.last_id == 7
 
-
 def test_get_jobs(warm_scheduler):
     assert len(warm_scheduler.get_jobs()) == 3
     assert len(warm_scheduler.get_jobs(active=False)) == 6
 
-
 def test_get_next(warm_scheduler):
-    assert warm_scheduler.get_next().user == "Tyler"
-    assert warm_scheduler.get_next().description == "sleep 10"
-
+    assert warm_scheduler.get_next().user == "tyler@mail.com"
+    assert warm_scheduler.get_next().description == "sleep for 10 seconds"
 
 def test_update_status(warm_scheduler):
-    #warm_scheduler.update_job_status(0, "RUNNING")
-    #assert len(warm_scheduler.jobs) == 2
-    pass
+    warm_scheduler.update_job_status(0, "RUNNING")
+    assert len(warm_scheduler.jobs) == 2

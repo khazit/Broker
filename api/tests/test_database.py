@@ -10,15 +10,6 @@ from broker.utils import Job, JobStatus
 
 @pytest.fixture
 def warm_db():
-    """
-    id	user	status	description	            epoch_received
-    0	Tyler	2	    sleep 10	            270270270
-    3	Boy	    0	    echo "I speak giberish"	2702700014
-    4	Scott	4	    df -h	                174585230
-    5	Jim	    5	    echo "He done"	        155647850
-    7	Creator	2	    docker ps	            14233658740
-    8	Good	2	    sleep 15	            1244
-    """
     copyfile("tests/test_data/data.db", "tests/test_data/backup")
     yield DataBaseManager("tests/test_data/data.db")
     os.remove("tests/test_data/data.db")
@@ -40,7 +31,8 @@ def cold_db():
 def dummy_job_1():
     payload = {
         "user": "Hafthor",
-        "description": "Deadlift"
+        "description": "Deadlift",
+        "command": "Lift"
     }
     return Job.from_payload(payload) 
 
@@ -48,7 +40,8 @@ def dummy_job_1():
 def dummy_job_2():
     payload = {
         "user": "Brian",
-        "description": "Deadlift"
+        "description": "Deadlift",
+        "command": "Lift harder"
     }
     return Job.from_payload(payload) 
 
