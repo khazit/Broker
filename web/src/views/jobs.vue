@@ -6,7 +6,7 @@
           <div class="card-body">
             <b-row>
               <b-col align-self="start"><h5 class="card-title mb-4">Jobs</h5></b-col>
-              <b-button v-b-modal.job-modal align-self="end" variant="dark" size="xs"><i class="mdi mdi-database-plus"></i>New Job</b-button>
+              <b-button v-b-modal.job-modal align-self="end" variant="dark" size="sm"><i class="mdi mdi-database-plus"></i>New Job</b-button>
               <b-modal ref="addJobModal"
                        id="job-modal"
                        title="Create a new job"
@@ -46,7 +46,7 @@
                   <tr>
                     <th class="border-bottom-0">ID</th>
                     <th class="border-bottom-0">User</th>
-                    <th class="border-bottom-0">Received on</th>
+                    <th class="border-bottom-0">Command</th>
                     <th class="border-bottom-0">Status</th>
                     <th class="border-bottom-0"></th>
                     <th class="border-bottom-0"></th>
@@ -56,7 +56,7 @@
                   <tr v-for="(job, index) in jobs" :key="index">
                     <td>{{ job.identifier }}</td>
                     <td>{{ job.user }}</td>
-                    <td>{{ job.epoch_received }}</td>
+                    <td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:0px;">{{ job.command }}</td>
                     <td>
                       <span v-if="job.status == 0">
                         <b-badge variant="warning">Unknown</b-badge>
@@ -79,13 +79,13 @@
                     </td>
                     <td>
                       <div class="text-center">
-                        <b-btn v-b-modal="'modalsm' + job.identifier" variant="secondary" size="xs" class="btn-fw">Show command</b-btn>
+                        <b-btn v-b-modal="'modalsm' + job.identifier" variant="secondary" size="sm" class="btn-fw">Show description</b-btn>
                       </div>
                       <b-modal :id="'modalsm' + job.identifier" ok-only size="sm">
                         <p>{{ job.description }}</p>
                       </b-modal>
                     </td>
-                    <td><button @click="onRemoveJob(job)" class="btn btn-outline-danger btn-xs">Cancel</button></td>
+                    <td><button @click="onRemoveJob(job)" class="btn btn-outline-danger btn-sm">Cancel</button></td>
                   </tr>
                 </tbody>
               </table>
