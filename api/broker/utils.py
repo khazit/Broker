@@ -88,13 +88,14 @@ class Job(Base):
 
     def to_dict(self):
         "Returns a Job in Python dict format"
-        return self.__dict__
+        return {
+            "identifier": self.identifier,
+            "user": self.user,
+            "status": self.status,
+            "description": self.description,
+            "command": self.command
+        }
 
     def to_json(self):
         "Serializes a Job in JSON format"
-        return json.dumps(
-            self,
-            default=lambda o: o.__dict__,
-            sort_keys=True,
-            indent=4
-        )
+        return json.dumps(self.to_dict())
