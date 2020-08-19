@@ -31,6 +31,10 @@ class JobStatus(Enum):
     DONE = 5
 
 
+def is_status_valid(status):
+    return 0 <= int(status) <= 5
+
+
 class Job(Base):
     """A unit of work
     Is given by a user to the Scheduler, that will pass it (at the

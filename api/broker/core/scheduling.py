@@ -3,8 +3,8 @@ Scheduling module. Controls the order in which the jobs are executed.
 """
 
 
-from broker.database import DataBaseManager
-from broker.utils import JobStatus
+from broker.core.database import DataBaseManager
+from broker.core.utils import JobStatus
 
 
 class Scheduler:
@@ -33,8 +33,9 @@ class Scheduler:
             payload: Dict, POST request payload
         """
         # Update db
-        self.db_manager.db_add_job(job)
+        identifier = self.db_manager.add_job(job)
         self.__refresh_jobs()
+        return identifier
 
     def remove_job(self, identifier):
         """Removes an existing Job from Scheduler
@@ -44,7 +45,7 @@ class Scheduler:
         Args:
             identifier: Integer, a unique indentifier
         """
-        self.db_manager.db_remove_job(identifier)
+        self.db_manager.remove_job(identifier)
         self.__refresh_jobs()
 
     def get_jobs(self, active=True):
@@ -59,7 +60,7 @@ class Scheduler:
         if active:
             return self.jobs
         # if not
-        return self.db_manager.db_get_jobs(active=False)
+        return self.db_manager.get_jobs(active=False)
 
     def get_next(self):
         """Returns the next job on the queue
@@ -84,11 +85,11 @@ class Scheduler:
                 break
         self.__refresh_jobs()
         # Update the status on the SQL table
-        self.db_manager.db_update_job_status(identifier, status)
+        self.db_manager.update_job_status(identifier, status)
 
     def __refresh_jobs(self):
         """Drops inactive jobs from memory"""
-        self.jobs = self.db_manager.db_get_jobs()
+        self.jobs = self.db_manager.get_jobs()
 
     def __str__(self):
         res = f"Managing {len(self.jobs)} jobs:\n"

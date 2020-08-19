@@ -3,12 +3,15 @@
 
 import logging
 from os.path import isfile
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.expression import or_, func
-from broker.utils import Job
-# pylint: disable=no-member
 
+from broker.core.utils import Job
+
+
+# pylint: disable=no-member
 
 Session = sessionmaker()
 
@@ -44,12 +47,12 @@ class DataBaseManager():
         db_exist = isfile(self.sqlite_file)
         if db_exist:
             logging.info("Loading data from %s", self.sqlite_file)
-            jobs = self.db_warm_start()
+            jobs = self.warm_start()
             #  if db file exists but empty db
-            if self.db_get_last_id() is None:
+            if self.get_last_id() is None:
                 self.last_id = 0
             else:
-                self.last_id = self.db_get_last_id()
+                self.last_id = self.get_last_id()
         else:
             logging.info("Can't find existing db at %s", self.sqlite_file)
             logging.info("Starting one from scratch")
@@ -57,11 +60,11 @@ class DataBaseManager():
             self.last_id = 0
         return jobs
 
-    def db_get_last_id(self):
+    def get_last_id(self):
         """Gets value of last used id"""
         return self.session.query(func.max(Job.identifier)).scalar()
 
-    def db_get_jobs(self, active=True):
+    def get_jobs(self, active=True):
         """Returns jobs from the database
 
         Args:
@@ -72,7 +75,7 @@ class DataBaseManager():
                 all()
         return self.session.query(Job).all()
 
-    def db_n_jobs(self, active=True):
+    def get_n_jobs(self, active=True):
         """Counts number of jobs in database
 
         Args:
@@ -84,30 +87,38 @@ class DataBaseManager():
         return self.session.query(Job).\
             count()
 
-    def db_warm_start(self):
+    def warm_start(self):
         """Warm start from an existing db file
 
         Returns:
             (list) Active jobs
         """
-        jobs = self.db_get_jobs(active=True)
+        jobs = self.get_jobs(active=True)
         logging.info("Found %i active jobs in database", len(jobs))
         return jobs
 
-    def db_add_job(self, job):
+    def add_job(self, job):
         """Adds a job entry to the database given an identifier"""
         job.identifier = self.last_id + 1
         self.session.add(job)
         self.session.commit()
-        self.last_id = self.db_get_last_id()
+        self.last_id = self.get_last_id()
+        return job.identifier
 
-    def db_remove_job(self, identifier):
+    def remove_job(self, identifier):
         """Removes a job entry from the database given an identifier"""
-        self.session.query(Job).filter_by(identifier=identifier).delete()
-        self.session.commit()
-        self.last_id = self.db_get_last_id()
+        exists = (self.session)\
+            .query(Job.identifier)\
+            .filter_by(identifier=identifier)\
+            .scalar() is not None
+        if exists:
+            self.session.query(Job.identifier).filter_by(identifier=identifier).delete()
+            self.session.commit()
+            self.last_id = self.get_last_id()
+        else:
+            raise IndexError(f"Job #{identifier} not found")
 
-    def db_update_job_status(self, identifier, status):
+    def update_job_status(self, identifier, status):
         """Updates a job's status"""
         job = self.session.query(Job).filter_by(identifier=identifier).first()
         job.status = status
