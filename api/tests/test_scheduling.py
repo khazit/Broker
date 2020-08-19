@@ -1,9 +1,13 @@
 import pytest
 import os
 from shutil import copyfile
+import logging
 from os.path import isfile
-from broker.scheduling import Scheduler
-from broker.utils import Job
+from broker.core.scheduling import Scheduler
+from broker.core.utils import Job
+
+
+logging.basicConfig(level=logging.ERROR)
 
 ########################################################################################
 # Fixtures
@@ -21,7 +25,7 @@ def warm_empty_scheduler():
     copyfile("tests/test_data/empty.db", "tests/test_data/empty_backup")
     yield Scheduler("tests/test_data/empty.db")
     os.remove("tests/test_data/empty.db")
-    os.rename("tests/test_data/empty_backup", "tests/test_data/empty.db")   
+    os.rename("tests/test_data/empty_backup", "tests/test_data/empty.db")
 
 @pytest.fixture
 def cold_scheduler():
@@ -47,7 +51,7 @@ def test_add_job(warm_scheduler, warm_empty_scheduler, cold_scheduler):
         "command": "ls /tmp",
         "description": "Unix joke"
     }
-    
+
     warm_scheduler.add_job(Job.from_payload(payload))
     assert len(warm_scheduler.jobs) == 4
     assert warm_scheduler.db_manager.last_id == 9
@@ -59,10 +63,11 @@ def test_add_job(warm_scheduler, warm_empty_scheduler, cold_scheduler):
     cold_scheduler.add_job(Job.from_payload(payload))
     assert len(cold_scheduler.jobs) == 1
     assert cold_scheduler.db_manager.last_id == 1
-    
+
 def test_remove_jobs(warm_scheduler):
      # Index out of range test
-    warm_scheduler.remove_job(270)
+    with pytest.raises(IndexError):
+        warm_scheduler.remove_job(270)
     assert len(warm_scheduler.jobs) == 3
 
     warm_scheduler.remove_job(8)

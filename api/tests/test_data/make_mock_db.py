@@ -1,7 +1,10 @@
+from pathlib import Path
+
 import sqlite3
 
 
 if __name__ == "__main__":
+    Path("tests/test_data/data.db").touch()
     conn = sqlite3.connect("tests/test_data/data.db", check_same_thread=False)
     cursor = conn.cursor()
     cursor.execute(
@@ -68,7 +71,8 @@ if __name__ == "__main__":
         ")"
     )
     conn.commit()
-
+    
+    Path("tests/test_data/empty.db").touch()
     conn = sqlite3.connect("tests/test_data/empty.db", check_same_thread=False)
     cursor = conn.cursor()
     cursor.execute(
