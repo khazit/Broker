@@ -34,6 +34,12 @@
                                       required
                                       placeholder="Command">
                         </b-form-input>
+                        <b-form-input id="description"
+                                      type="text"
+                                      v-model="addJobForm.description"
+                                      required
+                                      placeholder="Description">
+                        </b-form-input>
                       </b-form-group>
                       <b-button type="submit" variant="secondary" class="mr-2" size="sm">Submit</b-button>
                     </b-form>
@@ -122,7 +128,7 @@ export default {
         })
     },
     addJob (payload) {
-      const path = 'http://localhost:5000/jobs/add'
+      const path = 'http://localhost:5000/jobs'
       axios.post(path, payload)
         .then(() => {
           // update page with GET request
@@ -137,19 +143,21 @@ export default {
     initForm () {
       this.addJobForm.username = ''
       this.addJobForm.command = ''
+      this.addJobForm.description = ''
     },
     onSubmit (evt) {
       evt.preventDefault()
       this.$refs.addJobModal.hide()
       const payload = {
         user: this.addJobForm.username,
-        description: this.addJobForm.command
+        command: this.addJobForm.command,
+        description: this.addJobForm.description
       }
       this.addJob(payload)
       this.initForm()
     },
     removeJob (jobID) {
-      const path = `http://localhost:5000/jobs/remove/${jobID}`
+      const path = `http://localhost:5000/jobs/${jobID}`
       axios.delete(path)
         .then(() => {
           this.getJobs()
