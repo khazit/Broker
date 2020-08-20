@@ -43,7 +43,7 @@ def get_job():
             return response
         if response.status_code == 204:
             return None
-        logging.ERROR("Weird response status code %s", response.status_code)
+        logging.error("Weird response status code %s", response.status_code)
         return None
     except requests.exceptions.RequestException as err:
         logging.info("Request module raised an exception.\n%s", err)
