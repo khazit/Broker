@@ -121,5 +121,9 @@ class DataBaseManager():
     def update_job_status(self, identifier, status):
         """Updates a job's status"""
         job = self.session.query(Job).filter_by(identifier=identifier).first()
-        job.status = status
-        self.session.commit()
+        if job is not None:
+            job.status = status
+            self.session.commit()
+        else:
+            self.session.commit()
+            raise IndexError(f"Job #{identifier} not found")
