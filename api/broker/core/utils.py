@@ -33,7 +33,13 @@ class JobStatus(Enum):
 
 def is_status_valid(status):
     """Checks if the status value is valid"""
-    return 0 <= int(status) <= 5
+    if isinstance(status, str):
+        res = status in ["UNKNOWN", "SLEEPING", "WAITING", "RUNNING", "TERMINATED", "DONE"]
+    elif isinstance(status, int):
+        res = 0 <= status <= 5
+    else:
+        return False
+    return res
 
 
 class Job(Base):
