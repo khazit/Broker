@@ -1,3 +1,5 @@
+"""Routes that are used by runners."""
+
 import logging
 
 from flask import current_app as app
@@ -10,10 +12,10 @@ from broker.core.utils import is_status_valid
 def get_available_job():
     """Gets an available job"""
     logging.info("GET - r %s", None)
-    job = app.schedule.get_next() 
+    job = app.schedule.get_next()
     if job is None:
         return jsonify(None), 204
-    return app.schedule.get_next().to_json(), 200
+    return jsonify(app.schedule.get_next().to_dict()), 200
 
 
 @app.route("/runners/update-job", methods=["PUT"])
@@ -30,5 +32,6 @@ def update_job_status():
         return jsonify(), 204
     except IndexError as err:
         logging.error(err)
-        return jsonify(error=f"Resource Job #{job_id} not found"), 404
-
+        return jsonify(
+            error=f"Resource Job #{payload['identifier']} not found"
+        ), 404
