@@ -32,6 +32,7 @@ class JobStatus(Enum):
 
 
 def is_status_valid(status):
+    """Checks if the status value is valid"""
     return 0 <= int(status) <= 5
 
 

@@ -1,3 +1,9 @@
+"""The Web Server Gateway Interface (WSGI).
+
+Serves as the app gateway
+"""
+
+
 import os
 
 from broker import create_app

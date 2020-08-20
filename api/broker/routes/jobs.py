@@ -1,3 +1,7 @@
+"""Routes related to job resources"""
+
+# pylint: disable=W0703
+
 import logging
 
 from flask import current_app as app
