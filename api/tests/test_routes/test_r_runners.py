@@ -30,4 +30,47 @@ def test_get_next_job(client):
     assert response.get_json()["identifier"] == 0
 
 def test_update_job_status(client):
-    pass 
+    response = client.put(
+        "/runners/update-job",
+        json={
+            "identifier": 7,
+            "status": "nothing",
+        }   
+    )
+    assert response.status_code == 400
+    response = client.put(
+        "/runners/update-job",
+        json={
+            "identifier": 70,
+            "status": "DONE",
+        }   
+    )
+    assert response.status_code == 404
+    response = client.put(
+        "/runners/update-job",
+        json={
+            "identifier": 0,
+            "status": "DONE",
+        }   
+    )
+    assert response.status_code == 204
+    response = client.put(
+        "/runners/update-job",
+        json={
+            "identifier": 7,
+            "status": "DONE",
+        }   
+    )
+    assert response.status_code == 204
+    response = client.put(
+        "/runners/update-job",
+        json={
+            "identifier": 8,
+            "status": "DONE",
+        }   
+    )
+    assert response.status_code == 204   
+
+def test_get_next_job_none(client):
+    response = client.get("/runners/available-job")
+    assert response.status_code == 204

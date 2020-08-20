@@ -31,16 +31,19 @@ def get_job():
     """
     try:
         response = requests.get(
-            f"http://{SCHEDULER_IP}:{SCHEDULER_PORT}/jobs/runner/get_next"
+            f"http://{SCHEDULER_IP}:{SCHEDULER_PORT}/runners/available-job"
         )
         response.raise_for_status()
-        response = response.json()
-        if response is not None:
+        print("reponseeeeeeeeeeee", response)
+        if response.status_code == 200:
+            response = response.json()
             logging.info(
                 "Successfully received JOB #%d from scheduler",
                 response["identifier"]
             )
-        return response
+            return response
+        elif response.status_code == 204:
+            return None
     except requests.exceptions.RequestException as err:
         logging.info("Request module raised an exception.\n%s", err)
         return None
@@ -71,8 +74,8 @@ def send_update(identifier, status):
     """
     logging.info("Setting JOB #%d status to %s", identifier, status)
     try:
-        requests.post(
-            f"http://{SCHEDULER_IP}:{SCHEDULER_PORT}/jobs/runner/update",
+        requests.put(
+            f"http://{SCHEDULER_IP}:{SCHEDULER_PORT}/runners/update-job",
             json={"identifier": identifier, "status": status}
         )
     except requests.exceptions.RequestException as err:
