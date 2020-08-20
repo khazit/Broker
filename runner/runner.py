@@ -34,7 +34,6 @@ def get_job():
             f"http://{SCHEDULER_IP}:{SCHEDULER_PORT}/runners/available-job"
         )
         response.raise_for_status()
-        print("reponseeeeeeeeeeee", response)
         if response.status_code == 200:
             response = response.json()
             logging.info(
@@ -42,8 +41,10 @@ def get_job():
                 response["identifier"]
             )
             return response
-        elif response.status_code == 204:
+        if response.status_code == 204:
             return None
+        logging.ERROR("Weird response status code %s", response.status_code)
+        return None
     except requests.exceptions.RequestException as err:
         logging.info("Request module raised an exception.\n%s", err)
         return None
