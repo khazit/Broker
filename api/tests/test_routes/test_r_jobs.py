@@ -14,7 +14,6 @@ def backup():
     copyfile("tests/test_data/data.db", "tests/test_data/backup")
     yield
     # after
-    os.remove("tests/test_data/data.db")
     os.rename("tests/test_data/backup", "tests/test_data/data.db")
 
 
@@ -32,8 +31,8 @@ def test_append_job(client):
     assert data["status"] == 2
     assert data["description"] == "A drincc"
     assert data["command"] == "You will not have the drink !"
-    assert data["identifier"] == 9
-
+    assert data["identifier"] == 7
+    
 def test_remove_job(client):
     response = client.delete("/jobs/1000")
     assert response.status_code == 404

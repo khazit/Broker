@@ -12,7 +12,7 @@ from broker.core.utils import Job
 
 @app.route("/jobs", methods=["POST"])
 def append_job():
-    """Append a new job to the schedulr"""
+    """Appends a new job to the schedule."""
     payload = request.json
     logging.info("POST - u %s", payload["user"])
     try:
@@ -26,7 +26,7 @@ def append_job():
 
 @app.route("/jobs/<job_id>", methods=["DELETE"])
 def remove_job(job_id):
-    """Removes a job from the schedule"""
+    """Removes a job from the schedule."""
     logging.info("DELETE - u %s - id %s", None, job_id)
     try:
         app.schedule.remove_job(int(job_id))
@@ -38,9 +38,9 @@ def remove_job(job_id):
 
 @app.route("/jobs", methods=["GET"])
 def get_jobs():
-    """Fetch job by id"""
+    """Fetchs all jobs."""
     logging.info("GET - u %s - id %s", None, "all")
-    jobs = app.schedule.get_jobs(active=False)
+    jobs = app.schedule.get_jobs()
     res = []
     for job in jobs:
         res.append(job.to_dict())

@@ -13,21 +13,21 @@ logging.basicConfig(level=logging.ERROR)
 ########################################################################################
 
 @pytest.fixture
-def warm_db():
+def warm_db(scope="module"):
     copyfile("tests/test_data/data.db", "tests/test_data/backup")
     yield DataBaseManager("tests/test_data/data.db")
     os.remove("tests/test_data/data.db")
     os.rename("tests/test_data/backup", "tests/test_data/data.db")
 
 @pytest.fixture
-def warm_empty_db():
+def warm_empty_db(scope="module"):
     copyfile("tests/test_data/empty.db", "tests/test_data/empty_backup")
     yield DataBaseManager("tests/test_data/empty.db")
     os.remove("tests/test_data/empty.db")
     os.rename("tests/test_data/empty_backup", "tests/test_data/empty.db")   
 
 @pytest.fixture
-def cold_db():
+def cold_db(scope="module"):
     yield DataBaseManager("/tmp/no.db")
     os.remove("/tmp/no.db")
 
@@ -54,43 +54,39 @@ def dummy_job_2():
 ########################################################################################
 
 def test_init_db_warm(warm_db):
-    assert warm_db.get_n_jobs() == 3
-    assert warm_db.get_n_jobs(active=False) == 6 
+    assert warm_db.get_n_jobs() == 6
 
 def test_init_db_warm_empty(warm_empty_db):
     assert warm_empty_db.get_n_jobs() == 0
-    assert warm_empty_db.get_n_jobs(active=False) == 0
 
 def test_init_db_cold(cold_db):
     assert cold_db.get_n_jobs() == 0
-    assert cold_db.get_n_jobs(active=False) == 0   
 
-def test_add_job(warm_db, warm_empty_db, dummy_job_1, dummy_job_2):
+def test_add_job(warm_db, warm_empty_db, cold_db, dummy_job_1, dummy_job_2):
     warm_db.add_job(dummy_job_1)
-    assert warm_db.get_n_jobs() == 4
-    assert warm_db.get_n_jobs(active=False) == 7
+    assert warm_db.get_n_jobs() == 7
+    assert warm_db.get_job_by_id(7).user == "Hafthor"    
 
     warm_empty_db.add_job(dummy_job_2) 
     assert warm_empty_db.get_n_jobs() == 1
-    assert warm_empty_db.get_n_jobs(active=False) == 1
 
+def test_update_job(warm_db):
+    warm_db.update_job(5, user="Brian")
+    assert warm_db.get_job_by_id(5).user == "Brian"
+ 
 def test_remove_job(warm_db, warm_empty_db):
     warm_db.remove_job(5)
-    assert warm_db.get_n_jobs() == 3
-    assert warm_db.get_n_jobs(active=False) == 5
+    assert warm_db.get_n_jobs() == 5
 
     with pytest.raises(IndexError):
         warm_db.remove_job(162)
            
-    warm_db.remove_job(7)
-    assert warm_db.get_n_jobs() == 2
-    assert warm_db.get_n_jobs(active=False) == 4
+    warm_db.remove_job(6)
+    assert warm_db.get_n_jobs() == 4
 
     with pytest.raises(IndexError):
         warm_empty_db.remove_job(0) 
         warm_empty_db.remove_job(270) 
 
-def test_update_job_status(warm_db):
-    warm_db.update_job_status(7, JobStatus.TERMINATED.value)
-    assert warm_db.get_n_jobs() == 2
-    assert warm_db.get_n_jobs(active=False) == 6
+def test_select_job_by(warm_db):
+    assert len(warm_db.select_jobs_by(status=2)) == 3

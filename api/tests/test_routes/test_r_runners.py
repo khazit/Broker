@@ -21,19 +21,19 @@ def backup():
 def test_get_next_job(client):
     response = client.get("/runners/available-job")
     assert response.status_code == 200
-    assert response.get_json()["identifier"] == 0
+    assert response.get_json()["identifier"] == 4
 
     # this is done 2 times to check that if a job's status is not
     # explicitely updated, it remains available
     response = client.get("/runners/available-job")
     assert response.status_code == 200
-    assert response.get_json()["identifier"] == 0
+    assert response.get_json()["identifier"] == 4
 
 def test_update_job_status(client):
     response = client.put(
         "/runners/update-job",
         json={
-            "identifier": 7,
+            "identifier": 3,
             "status": "nothing",
         }   
     )
@@ -49,7 +49,7 @@ def test_update_job_status(client):
     response = client.put(
         "/runners/update-job",
         json={
-            "identifier": 0,
+            "identifier": 4,
             "status": "DONE",
         }   
     )
@@ -57,7 +57,7 @@ def test_update_job_status(client):
     response = client.put(
         "/runners/update-job",
         json={
-            "identifier": 7,
+            "identifier": 5,
             "status": "DONE",
         }   
     )
@@ -65,7 +65,7 @@ def test_update_job_status(client):
     response = client.put(
         "/runners/update-job",
         json={
-            "identifier": 8,
+            "identifier": 6,
             "status": "DONE",
         }   
     )
@@ -73,4 +73,5 @@ def test_update_job_status(client):
 
 def test_get_next_job_none(client):
     response = client.get("/runners/available-job")
+    print(client.get("/jobs").get_json())
     assert response.status_code == 204
