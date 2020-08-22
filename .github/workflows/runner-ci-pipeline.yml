@@ -20,6 +20,3 @@ jobs:
       - name: Run pylint
         run: pylint *.py --ignore setup.py 
         working-directory: ./runner
-      - name: Run flake8
-        run: flake8 *.py --exclude setup.py
-        working-directory: ./runner

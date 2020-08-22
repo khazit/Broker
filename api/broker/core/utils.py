@@ -31,6 +31,17 @@ class JobStatus(Enum):
     DONE = 5
 
 
+def is_status_valid(status):
+    """Checks if the status value is valid"""
+    if isinstance(status, str):
+        res = status in ["UNKNOWN", "SLEEPING", "WAITING", "RUNNING", "TERMINATED", "DONE"]
+    elif isinstance(status, int):
+        res = 0 <= status <= 5
+    else:
+        return False
+    return res
+
+
 class Job(Base):
     """A unit of work
     Is given by a user to the Scheduler, that will pass it (at the
