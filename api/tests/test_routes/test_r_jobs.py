@@ -8,13 +8,14 @@ import pytest
 logging.basicConfig(level=logging.ERROR)
 
 
-@pytest.fixture(autouse=True, scope="module")
+@pytest.fixture(autouse=True, scope="session")
 def backup():
     # before
     copyfile("tests/test_data/data.db", "tests/test_data/backup")
     yield
     # after
     os.rename("tests/test_data/backup", "tests/test_data/data.db")
+        
 
 
 def test_append_job(client):
