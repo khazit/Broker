@@ -1,12 +1,13 @@
 """SQLAlchemy data models."""
 
+
 import json
 import logging
+from time import time
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, Float, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-
-from broker.core.utils import JobStatus
+from sqlalchemy.orm import relationship
 
 
 Base = declarative_base()
@@ -20,7 +21,7 @@ class Job(Base):
     Attributes:
         - identifier: Integer, unique id
         - user: String, user id
-        - status: JobStatus, represents the status of the job
+        - events: List of updates to the job's status
         - description: String, a description of the job
         - epoch_received: Integer, epoch when the job was received
     """
@@ -28,7 +29,7 @@ class Job(Base):
     __tablename__ = "jobs"
     identifier = Column(Integer, primary_key=True)
     user = Column(String)
-    status = Column(Integer)
+    events = relationship("Event", cascade="all, delete-orphan")
     description = Column(String)
     command = Column(String)
 
@@ -45,7 +46,6 @@ class Job(Base):
         try:
             job = Job(
                 user=payload["user"],
-                status=JobStatus.WAITING.value,
                 description=payload["description"],
                 command=payload["command"],
             )
@@ -54,14 +54,14 @@ class Job(Base):
             logging.error("Incorrect payload. Can't create job instance")
 
     def __repr__(self):
-        return f"Job<id={self.identifier}, status={self.status}>"
+        return f"Job<id={self.identifier}, status={self.events[-1].status}>"
 
     def __str__(self):
         return (
             "---\n"
             f"Job #{self.identifier}\n"
             f"User: {self.user}\n"
-            f"Status: {self.status}\n"
+            f"Status: {self.events[-1].status}\n"
             f"Command: {self.command}\n"
             f"Description: {self.description}\n"
             "---"
@@ -72,7 +72,7 @@ class Job(Base):
         return {
             "identifier": self.identifier,
             "user": self.user,
-            "status": self.status,
+            "events": [e.to_dict() for e in self.events],
             "description": self.description,
             "command": self.command
         }
@@ -80,3 +80,31 @@ class Job(Base):
     def to_json(self):
         "Serializes a Job in JSON format"
         return json.dumps(self.to_dict())
+
+
+class Event(Base):
+    """An event is when a job's is updated by a runner.
+
+    See `broker.core.utils.JobStatus` for possible values.
+    """
+
+    __tablename__ = "events"
+    identifier = Column(Integer, primary_key=True)
+    job_id = Column(Integer, ForeignKey("jobs.identifier"))
+    timestamp = Column(Float)
+    status = Column(Integer)
+
+    def __init__(self, **kwargs):
+        super(Event, self).__init__(**kwargs)
+        self.timestamp = time()        
+
+    def __repr__(self):
+        return f"Event<id={self.identifier}, job={self.job_id}>"
+
+    def to_dict(self):
+        """Returns an Even in a Python dict format."""
+        return {
+            "identifier": self.identifier,
+            "timestamp": self.timestamp,
+            "status": self.status,
+        }

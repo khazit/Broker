@@ -61,7 +61,7 @@ def test_add_job(warm_scheduler, warm_empty_scheduler, cold_scheduler):
 
 def test_update_status(warm_scheduler):
     warm_scheduler.update_job_status(1, "DONE")
-    assert warm_scheduler.get_job_by_id(1).status == 5 
+    assert warm_scheduler.get_job_status(1) == 5 
 
 def test_remove_jobs(warm_scheduler):
      # Index out of range test

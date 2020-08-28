@@ -17,7 +17,6 @@ def backup():
     os.rename("tests/test_data/backup", "tests/test_data/data.db")
         
 
-
 def test_append_job(client):
     response = client.post(
         "/jobs",
@@ -29,7 +28,7 @@ def test_append_job(client):
     )
     data = response.get_json()
     assert response.status_code == 201
-    assert data["status"] == 2
+    assert data["events"][-1]["status"] == 2
     assert data["description"] == "A drincc"
     assert data["command"] == "You will not have the drink !"
     assert data["identifier"] == 7

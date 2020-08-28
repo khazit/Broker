@@ -91,3 +91,4 @@ def test_remove_job(warm_db, warm_empty_db):
 
 def test_select_job_by(warm_db):
     assert len(warm_db.select_jobs_by(status=2)) == 3
+    assert len(warm_db.select_jobs_by(status=8)) == 0
