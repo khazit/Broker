@@ -19,11 +19,11 @@ class Job(Base):
     right time) to an available Runner to be run.
 
     Attributes:
-        - identifier: Integer, unique id
-        - user: String, user id
-        - events: List of updates to the job's status
-        - description: String, a description of the job
-        - epoch_received: Integer, epoch when the job was received
+        identifier: Integer, unique id
+        user: String, user id
+        events: List of updates to the job's status
+        description: String, a description of the job
+        epoch_received: Integer, epoch when the job was received
     """
 
     __tablename__ = "jobs"
@@ -83,9 +83,16 @@ class Job(Base):
 
 
 class Event(Base):
-    """An event is when a job's is updated by a runner.
+    """An event is when a job's status is updated.
 
-    See `broker.core.utils.JobStatus` for possible values.
+    See `broker.core.utils.JobStatus` for a list possible states.
+
+    Attributes:
+        identifier: Unique id.
+        job_id: Foreign key. Id of the job that was updated.
+        timestamp: Float, epoch when the status was updated.
+        status: Integer, status after update.
+
     """
 
     __tablename__ = "events"
@@ -95,8 +102,8 @@ class Event(Base):
     status = Column(Integer)
 
     def __init__(self, **kwargs):
-        super(Event, self).__init__(**kwargs)
-        self.timestamp = time()        
+        super().__init__(**kwargs)
+        self.timestamp = time()
 
     def __repr__(self):
         return f"Event<id={self.identifier}, job={self.job_id}>"

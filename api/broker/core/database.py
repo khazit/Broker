@@ -34,7 +34,7 @@ class DataBaseManager():
     def add_job(self, job):
         """Adds a job to the database."""
         self.session.add(job)
-        job.events.append(Event(status=JobStatus.WAITING.value)) 
+        job.events.append(Event(status=JobStatus.WAITING.value))
         self.session.commit()
 
     def get_jobs(self):
@@ -53,7 +53,7 @@ class DataBaseManager():
             job = self.get_job_by_id(identifier)
             for key, value in kwargs.items():
                 if key == "status":
-                    job.events.append(Event(status=value))                    
+                    job.events.append(Event(status=value))
                 else:
                     setattr(job, key, value)
             self.session.commit()
@@ -89,7 +89,7 @@ class DataBaseManager():
                     .query(Job)\
                     .join((sub, sub.c.job_id == Job.identifier))\
                     .filter(sub.c.status == kwargs["status"])\
-                    .all()  
+                    .all()
         return self.session.query(Job).filter_by(**kwargs).all()
 
     def get_job_status(self, identifier):
@@ -104,8 +104,7 @@ class DataBaseManager():
                 .filter(Event.job_id == identifier)\
                 .first()\
                 .status
-        else:
-            raise IndexError(f"Job #{identifier} not found")
+        raise IndexError(f"Job #{identifier} not found")
 
     def _job_exists(self, identifier):
         return (self.session)\
