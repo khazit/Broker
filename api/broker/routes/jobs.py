@@ -7,7 +7,7 @@ import logging
 from flask import current_app as app
 from flask import request, jsonify
 
-from broker.core.utils import Job
+from broker.core.models import Job
 
 
 @app.route("/jobs", methods=["POST"])

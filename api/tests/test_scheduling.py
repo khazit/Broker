@@ -4,7 +4,7 @@ from shutil import copyfile
 import logging
 from os.path import isfile
 from broker.core.scheduling import Scheduler
-from broker.core.utils import Job
+from broker.core.models import Job
 
 
 logging.basicConfig(level=logging.ERROR)

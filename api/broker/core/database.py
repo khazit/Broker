@@ -4,7 +4,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from broker.core.utils import Job
+from broker.core.models import Job
 
 
 # pylint: disable=no-member

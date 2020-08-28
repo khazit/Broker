@@ -3,7 +3,8 @@ import logging
 from shutil import copyfile
 import pytest
 from broker.core.database import DataBaseManager
-from broker.core.utils import Job, JobStatus
+from broker.core.models import Job
+from broker.core.utils import JobStatus
 
 
 logging.basicConfig(level=logging.ERROR)
