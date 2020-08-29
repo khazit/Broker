@@ -1,6 +1,7 @@
 import os
 import logging
 from shutil import copyfile
+from time import sleep
 
 import pytest
 
@@ -59,6 +60,7 @@ def test_update_job_status(client):
             "status": "DONE",
         }   
     )
+
     assert response.status_code == 204   
     response = client.put(
         "/runners/update-job",

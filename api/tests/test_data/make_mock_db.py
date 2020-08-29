@@ -1,9 +1,9 @@
+from time import sleep
 from pathlib import Path
-
 import sqlite3
 
 from broker.core.database import DataBaseManager
-from broker.core.utils import Job
+from broker.core.models import Job, Event
 
 if __name__ == "__main__":
     empty_db = DataBaseManager("tests/test_data/empty.db")
@@ -15,34 +15,56 @@ if __name__ == "__main__":
         "command": "docker run --gpus all --privileged=true -v /path/to/somewhere/or/something/:/work -v /home/path/to/some/data/set/data/:/data --name train --rm tensorflow python run_experiments.py experiments/experiment.json",
     }))
     job1 = db.session.query(Job).filter_by(identifier=1).first()
-    job1.status = 5
+    sleep(1)
+    job1.events.append(Event(status=2))
+    sleep(1)
+    job1.events.append(Event(status=3))
+    sleep(1)
+    job1.events.append(Event(status=5))
+
     db.session.add(Job.from_payload({
         "user": "boy@mail.com",
         "description": "Cant speak",
         "command": "echo 'I speak giberish'",
     }))
     job2 = db.session.query(Job).filter_by(identifier=2).first()
-    job2.status = 4
+    job2.events.append(Event(status=2))
+    sleep(1)
+    job2.events.append(Event(status=3))
+    sleep(1)
+    job2.events.append(Event(status=4))
+
     db.session.add(Job.from_payload({
         "user": "scott@mail.com",
         "description": "No space",
         "command": "df -h",
     }))
     job3 = db.session.query(Job).filter_by(identifier=3).first()
-    job3.status = 3
+    job3.events.append(Event(status=2))
+    sleep(1)
+    job3.events.append(Event(status=3))
+
     db.session.add(Job.from_payload({
         "user": "jim@mail.com",
         "description": "G O O D",
         "command": "echo 'He done'",
     }))
+    job4 = db.session.query(Job).filter_by(identifier=4).first()
+    job4.events.append(Event(status=2))
+
     db.session.add(Job.from_payload({
         "user": "creator@mail.com",
         "description": "Check on my dockers",
         "command": "docker ps",
     }))
+    job5 = db.session.query(Job).filter_by(identifier=5).first()
+    job5.events.append(Event(status=2))
+
     db.session.add(Job.from_payload({
         "user": "good@mail.com",
         "description": "Nap time",
         "command": "sleep 15",
     }))
+    job6 = db.session.query(Job).filter_by(identifier=6).first()
+    job6.events.append(Event(status=2))
     db.session.commit()

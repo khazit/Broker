@@ -10,7 +10,7 @@ COPY api work
 WORKDIR /work
 
 # Install project dependencies
-RUN poetry update
+RUN poetry install
 
 # Run Flask app in dev mode
 ENTRYPOINT FLASK_ENV=development flask run --host 0.0.0.0

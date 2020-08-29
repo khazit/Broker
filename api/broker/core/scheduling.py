@@ -46,9 +46,14 @@ class Scheduler:
         """Returns number of jobs in the schedule."""
         return self.db_manager.get_n_jobs()
 
+    def get_job_status(self, identifier):
+        """Returns a job's current status."""
+        return self.db_manager.get_job_status(identifier)
+
     def get_next(self):
         """Returns the next job on the queue."""
         queue = self.db_manager.select_jobs_by(status=2)
+        print("Queue\n", queue)
         if len(queue) != 0:
             return queue[0]
         return None
