@@ -63,7 +63,8 @@ class DataBaseManager():
     def remove_job(self, identifier):
         """Removes a job the database given an identifier"""
         if self._job_exists(identifier):
-            self.session.query(Job.identifier).filter_by(identifier=identifier).delete()
+            job = self.session.query(Job).filter(Job.identifier == identifier).first()
+            self.session.delete(job)
             self.session.commit()
         else:
             raise IndexError(f"Job #{identifier} not found")
