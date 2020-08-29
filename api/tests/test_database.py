@@ -3,7 +3,7 @@ import logging
 from shutil import copyfile
 import pytest
 from broker.core.database import DataBaseManager
-from broker.core.models import Job
+from broker.core.models import Job, Event
 from broker.core.utils import JobStatus
 
 
@@ -84,6 +84,7 @@ def test_remove_job(warm_db, warm_empty_db):
            
     warm_db.remove_job(6)
     assert warm_db.get_n_jobs() == 4
+    assert len(warm_db.session.query(Event).filter(Event.job_id == 6).all()) == 0
 
     with pytest.raises(IndexError):
         warm_empty_db.remove_job(0) 
