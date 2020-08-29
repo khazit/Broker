@@ -50,11 +50,11 @@ def get_job():
         return None
 
 
-def execute_job(identifier, description):
+def execute_job(identifier, command):
     """Execute a job"""
     send_update(identifier, "RUNNING")
-    logging.info("Executing JOB #%d: %s", identifier, description)
-    exit_code = os.system(description)
+    logging.info("Executing JOB #%d: %s", identifier, command)
+    exit_code = os.system(command)
     if exit_code == 0:
         send_update(identifier, "DONE")
     else:
@@ -102,6 +102,6 @@ SCHEDULER_PORT = ARGS.scheduler_port
 if __name__ == "__main__":
     JOB = get_job()
     while JOB is not None:
-        execute_job(JOB["identifier"], JOB["description"])
+        execute_job(JOB["identifier"], JOB["command"])
         JOB = get_job()
     logging.info("No jobs available, shutting down this runner. Box.")
