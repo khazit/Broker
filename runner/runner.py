@@ -16,10 +16,12 @@ whole architecture as compartmentalized as possible.
 import logging
 import tempfile
 import argparse
-import requests
 import subprocess
 
+import requests
 
+
+# pylint: disable=W1510
 logging.basicConfig(level=logging.INFO)
 
 
@@ -63,7 +65,7 @@ def execute_job(identifier, command):
     )
     requests.post(
         f"http://{SCHEDULER_IP}:{SCHEDULER_PORT}/jobs/{identifier}/logs",
-        files={"logfile": open(logfile.name, mode="rb")} 
+        files={"logfile": open(logfile.name, mode="rb")}
     )
     if result.returncode == 0:
         send_update(identifier, "DONE")
