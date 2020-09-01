@@ -111,7 +111,7 @@ class DataBaseManager():
 
     def add_logfile(self, job_id):
         """Assign a log file to a job given its identifier.
-        
+
         Returns:
             (str) logfile name in the server's file system
         """
@@ -129,7 +129,7 @@ class DataBaseManager():
 
 
     # --------------------------- Utilities ---------------------------- #
-    
+
     def _job_exists(self, identifier):
         return (self.session)\
             .query(Job.identifier)\

@@ -11,6 +11,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 
+# pylint: disable=R0903
 Base = declarative_base()
 
 
@@ -135,4 +136,7 @@ class LogFile(Base):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.filename = str(uuid4()).replace("-", "") 
+        self.filename = str(uuid4()).replace("-", "")
+
+    def __repr__(self):
+        return f"LogFile<id={self.identifier}, job={self.job_id}>"
