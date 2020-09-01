@@ -4,7 +4,7 @@
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 
-from broker.core.models import Base, Job, Event
+from broker.core.models import Base, Job, Event, LogFile
 from broker.core.utils import JobStatus
 
 
@@ -43,9 +43,9 @@ class DataBaseManager():
 
     def get_job_by_id(self, identifier):
         """Returns a job given an id."""
-        if not self._job_exists(identifier):
-            raise IndexError(f"Job #{identifier} not found")
-        return self.session.query(Job).filter_by(identifier=identifier).first()
+        if self._job_exists(identifier):
+            return self.session.query(Job).filter_by(identifier=identifier).first()
+        return None
 
     def update_job(self, identifier, **kwargs):
         """Updates a job."""
@@ -107,6 +107,29 @@ class DataBaseManager():
                 .status
         raise IndexError(f"Job #{identifier} not found")
 
+    # --------------------------- Log files ---------------------------- #
+
+    def add_logfile(self, job_id):
+        """Assign a log file to a job given its identifier.
+        
+        Returns:
+            (str) logfile name in the server's file system
+        """
+        job = self.get_job_by_id(job_id)
+        if job is not None:
+            job.logfile = LogFile(job_id=job_id)
+            return job.logfile.filename
+        raise IndexError(f"Job #{job_id} not found.")
+
+    def get_logfile(self, job_id):
+        """Returns a logfile given its job identifier."""
+        if self._job_exists(job_id):
+            return self.session.query(LogFile).filter_by(job_id=job_id).first()
+        raise IndexError(f"Job #{job_id} not found.")
+
+
+    # --------------------------- Utilities ---------------------------- #
+    
     def _job_exists(self, identifier):
         return (self.session)\
             .query(Job.identifier)\

@@ -130,8 +130,7 @@
                           </tbody>
                         </div>
                         <span v-if="job.status > 3">
-                          <h5>Logs</h5>
-                          <b-btn variant="primary" size="sm" class="btn-fw">Download</b-btn>
+                          <b-btn :href="'http://localhost:5000/jobs/'+job.identifier+'/logs'" variant="primary" size="sm" class="btn-fw">Download logs</b-btn>
                         </span>
                       </b-modal>
                     </td>
@@ -228,7 +227,6 @@ export default {
       var date = new Date(epoch * 1000)
       return moment(date).format('DD/MM/YYYY - HH:mm:ss')
     }
-
   }
 }
 </script>

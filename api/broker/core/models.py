@@ -4,6 +4,7 @@
 import json
 import logging
 from time import time
+from uuid import uuid4
 
 from sqlalchemy import Column, Integer, Float, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
@@ -32,6 +33,7 @@ class Job(Base):
     events = relationship("Event", cascade="all, delete-orphan")
     description = Column(String)
     command = Column(String)
+    logfile = relationship("LogFile", uselist=False, cascade="all, delete-orphan")
 
     @staticmethod
     def from_payload(payload):
@@ -115,3 +117,22 @@ class Event(Base):
             "timestamp": self.timestamp,
             "status": self.status,
         }
+
+
+class LogFile(Base):
+    """A job's logging file.
+
+    Attribute:
+        identifier: Unique id.
+        job_id: Foreign key. Id of the job.
+        filename: Filename.
+    """
+
+    __tablename__ = "logfiles"
+    identifier = Column(Integer, primary_key=True)
+    job_id = Column(Integer, ForeignKey("jobs.identifier"))
+    filename = Column(String)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.filename = str(uuid4()).replace("-", "") 
