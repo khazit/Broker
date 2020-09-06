@@ -7,19 +7,21 @@ Manages 3 types of interactions  with the Scheduler:
     2. Receives via a POST request info about the job to execute
     3. Sends a POST request when the job is done to update the status
 
-This runner is written using no objects from the Broker API backend (Job and
-JobStatus are not used here for eg, even if they could be useful). This was
+This runner is written using no objects from the Broker API backend. This was
 done on purpose to minimize the dependancy on the Scheduler, and make the
 whole architecture as compartmentalized as possible.
 """
 
 
-import os
 import logging
+import tempfile
 import argparse
+import subprocess
+
 import requests
 
 
+# pylint: disable=W1510
 logging.basicConfig(level=logging.INFO)
 
 
@@ -50,12 +52,22 @@ def get_job():
         return None
 
 
-def execute_job(identifier, description):
+def execute_job(identifier, command):
     """Execute a job"""
     send_update(identifier, "RUNNING")
-    logging.info("Executing JOB #%d: %s", identifier, description)
-    exit_code = os.system(description)
-    if exit_code == 0:
+    logfile = tempfile.NamedTemporaryFile(mode="w+b")
+    logging.info("Executing JOB #%d: %s", identifier, command)
+    result = subprocess.run(
+        command,
+        shell=True,
+        stdout=logfile,
+        stderr=subprocess.STDOUT
+    )
+    requests.post(
+        f"http://{SCHEDULER_IP}:{SCHEDULER_PORT}/jobs/{identifier}/logs",
+        files={"logfile": open(logfile.name, mode="rb")}
+    )
+    if result.returncode == 0:
         send_update(identifier, "DONE")
     else:
         send_update(identifier, "TERMINATED")
@@ -102,6 +114,6 @@ SCHEDULER_PORT = ARGS.scheduler_port
 if __name__ == "__main__":
     JOB = get_job()
     while JOB is not None:
-        execute_job(JOB["identifier"], JOB["description"])
+        execute_job(JOB["identifier"], JOB["command"])
         JOB = get_job()
     logging.info("No jobs available, shutting down this runner. Box.")

@@ -1,4 +1,5 @@
 import os
+import io
 import logging
 from shutil import copyfile
 
@@ -43,3 +44,14 @@ def test_get_jobs(client):
     response = client.get("/jobs")
     assert response.status_code == 200
     assert len(response.get_json()) == 6
+
+def test_add_logfile(client):
+    response = client.post("/jobs/1/logs")
+    assert response.status_code == 400
+
+def test_get_logfile(client):
+    response = client.get("/jobs/1/logs")
+    assert response.status_code == 404
+
+    response = client.get("/jobs/1000/logs")
+    assert response.status_code == 404

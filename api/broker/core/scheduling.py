@@ -53,7 +53,6 @@ class Scheduler:
     def get_next(self):
         """Returns the next job on the queue."""
         queue = self.db_manager.select_jobs_by(status=2)
-        print("Queue\n", queue)
         if len(queue) != 0:
             return queue[0]
         return None
