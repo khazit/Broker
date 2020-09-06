@@ -6,16 +6,14 @@ RUN poetry config virtualenvs.create false
 
 # Create working directory
 RUN mkdir work
-COPY api/broker work/broker
-COPY api/app.py work/app.py
-COPY api/pyproject.toml work/pyproject.toml
+COPY api work
 WORKDIR /work
 
 # Install project dependencies
-RUN poetry update
+RUN poetry install
 
 # Run Flask app in dev mode
-ENTRYPOINT ["flask", "run", "--reload", "--host", "0.0.0.0"]
+ENTRYPOINT FLASK_ENV=development flask run --host 0.0.0.0
 
 # Network config
 EXPOSE 5000
