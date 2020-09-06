@@ -11,7 +11,7 @@ if __name__ == "__main__":
     db = DataBaseManager("tests/test_data/data.db")
     db.session.add(Job.from_payload({
         "user": "tyler@mail.com",
-        "description": "run an experiment",
+        "description": "Run a simulation",
         "command": "docker run --gpus all --privileged=true -v /path/to/somewhere/or/something/:/work -v /home/path/to/some/data/set/data/:/data --name train --rm tensorflow python run_experiments.py experiments/experiment.json",
     }))
     job1 = db.session.query(Job).filter_by(identifier=1).first()
@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     db.session.add(Job.from_payload({
         "user": "boy@mail.com",
-        "description": "Cant speak",
+        "description": "Compute something important",
         "command": "echo 'I speak giberish'",
     }))
     job2 = db.session.query(Job).filter_by(identifier=2).first()
@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     db.session.add(Job.from_payload({
         "user": "scott@mail.com",
-        "description": "No space",
+        "description": "Run OCR",
         "command": "df -h",
     }))
     job3 = db.session.query(Job).filter_by(identifier=3).first()
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     db.session.add(Job.from_payload({
         "user": "jim@mail.com",
-        "description": "G O O D",
+        "description": "Train an AGI",
         "command": "echo 'He done'",
     }))
     job4 = db.session.query(Job).filter_by(identifier=4).first()
@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     db.session.add(Job.from_payload({
         "user": "creator@mail.com",
-        "description": "Check on my dockers",
+        "description": "Run a 100 years job",
         "command": "docker ps",
     }))
     job5 = db.session.query(Job).filter_by(identifier=5).first()
@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
     db.session.add(Job.from_payload({
         "user": "good@mail.com",
-        "description": "Nap time",
+        "description": "Test a script",
         "command": "sleep 15",
     }))
     job6 = db.session.query(Job).filter_by(identifier=6).first()
