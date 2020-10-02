@@ -20,8 +20,8 @@ class DevConfig(Config):
     FLASK_ENV = "development"
     TESTING = False
     DEBUG = True
-    DATABASE_URI = "broker/data/data.db"
-    STORAGE_URI = "data"
+    DATABASE_URI = "/data/data.db"
+    STORAGE_URI = "/data"
 
 
 class TestConfig(Config):
@@ -30,4 +30,4 @@ class TestConfig(Config):
     TESTING = True
     DEBUG = True
     DATABASE_URI = "tests/test_data/data.db"
-    STORAGE_URI = "data"
+    STORAGE_URI = "tests/test_data/data"

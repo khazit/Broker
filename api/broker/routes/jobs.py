@@ -56,10 +56,7 @@ def add_logfile(job_id):
     logfile = request.files["logfile"]
     try:
         filename = app.schedule.db_manager.add_logfile(job_id)
-        logfile.save(os.path.join(
-            app.root_path, app.config["STORAGE_URI"],
-            filename
-        ))
+        logfile.save(os.path.join(app.config["STORAGE_URI"], filename))
         return jsonify(), 204
     except IndexError as err:
         logging.error(err)
@@ -74,7 +71,7 @@ def get_logfile(job_id):
         if logfile is None:
             return jsonify(error="Log file not found"), 404
         return send_from_directory(
-            directory=os.path.join(app.root_path, app.config["STORAGE_URI"]),
+            directory=app.config["STORAGE_URI"],
             filename=logfile.filename
         ), 200
     except IndexError as err:
