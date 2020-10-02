@@ -25,8 +25,7 @@ tested.
 ### Scheduler
 To install the Scheduler on the main host machine (API + Dashboard):
 
-Open `docker/docker-compose-dev.yml` and modify the commented lines. Then,
-using docker-compose, build the two images
+Use docker-compose to build the two images
 ```
 $ docker-compose -f docker/docker-compose-dev.yml build
 ```
