@@ -1,13 +1,17 @@
 <template lang="html">
   <section class="jobs">
     <div class="row">
+      <!-- Table start -->
       <div class="col-12 grid-margin">
         <div class="card">
           <div class="card-body">
-            <!-- Title bar -->
+
+            <!-- Title bar start -->
             <b-row>
               <b-col align-self="start"><h5 class="card-title mb-4">Jobs</h5></b-col>
-              <b-button v-b-modal.job-modal align-self="end" variant="dark" size="sm"><i class="mdi mdi-database-plus"></i>New Job</b-button>
+              <b-button v-b-modal.job-modal align-self="end" variant="dark" size="sm">
+                <i class="mdi mdi-database-plus"></i>New Job
+              </b-button>
               <b-modal ref="addJobModal"
                        id="job-modal"
                        title="Create a new job"
@@ -49,8 +53,9 @@
                   </div>
               </b-modal>
             </b-row>
+            <!-- Title bar end -->
 
-            <!-- Jobs table -->
+            <!-- Jobs table start -->
             <div class="table-responsive">
               <table class="table center-aligned-table">
                 <thead>
@@ -60,15 +65,14 @@
                     <th class="border-bottom-0">Description</th>
                     <th class="border-bottom-0">Status</th>
                     <th class="border-bottom-0"></th>
-                    <th class="border-bottom-0"></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(job, index) in jobs" :key="index">
                     <td>{{ job.identifier }}</td>
-                    <td>{{ job.user }}</td>
-                    <td style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:0px;">{{ job.description}}</td>
-                    <td>
+                    <td id="td_user">{{ job.user }}</td>
+                    <td id="td_description">{{ job.description}}</td>
+                    <td id="td_status">
                       <span v-if="job.status == 0">
                         <b-badge variant="warning">Unknown</b-badge>
                       </span>
@@ -89,9 +93,6 @@
                       </span>
                     </td>
                     <td>
-                      <div class="text-center">
-                        <b-btn v-b-modal="'modalmd' + job.identifier" variant="secondary" size="sm" class="btn-fw">View Job</b-btn>
-                      </div>
                       <b-modal :id="'modalmd' + job.identifier" ok-only size="md">
                         <h5>Command</h5>
                         <p class="text-white bg-dark pl-1">$ {{ job.command }}</p>
@@ -134,14 +135,23 @@
                         </span>
                       </b-modal>
                     </td>
-                    <td><button @click="onRemoveJob(job)" class="btn btn-outline-danger btn-sm">Cancel</button></td>
+                    <td>
+                        <b-button v-b-modal="'modalmd' + job.identifier" variant="secondary"><i class="mdi mdi-information "></i>Info</b-button>
+                        <b-button @click="onRemoveJob(job)" variant="danger"><i class="mdi mdi-close"></i>Cancel</b-button>
+                        <span v-if="job.status == 4 || job.status == 5">
+                          <b-button variant="dark"><i class="mdi mdi-loop"></i>Reset</b-button>
+                        </span>
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
+            <!-- Jobs table start -->
+
           </div>
         </div>
       </div>
+      <!-- Table end -->
     </div>
   </section>
 </template>
@@ -232,4 +242,17 @@ export default {
 </script>
 
 <style scoped lang="scss">
+#td_user{
+  max-width: 150px;
+  white-space: nowrap;
+  text-overflow:ellipsis;
+  overflow: hidden;
+}
+#td_description{
+  max-width: 350px;
+  white-space: nowrap;
+  text-overflow:ellipsis;
+  overflow: hidden;
+}
+
 </style>
