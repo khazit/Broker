@@ -12,6 +12,12 @@
               <b-button v-b-modal.job-modal align-self="end" variant="dark" size="sm">
                 <i class="mdi mdi-database-plus"></i>New Job
               </b-button>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris in consectetur lorem. Suspendisse arcu ex,
+                condimentum eget arcu porttitor, bibendum tristique magna. Curabitur quis malesuada sem. Nulla facilisi.
+                Aliquam erat volutpat. Suspendisse rhoncus viverra quam, sit amet accumsan purus condimentum ut.
+                Proin in accumsan ligula. Sed et elit quis leo.
+              </p>
               <b-modal ref="addJobModal"
                        id="job-modal"
                        title="Create a new job"

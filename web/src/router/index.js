@@ -3,8 +3,6 @@ import Router from 'vue-router'
 
 import dashboard from '../views/dashboard'
 import jobs from '../views/jobs'
-import users from '../views/users'
-import runners from '../views/runners'
 
 Vue.use(Router)
 
@@ -12,7 +10,7 @@ export default new Router({
   linkActiveClass: 'active',
   mode: 'history',
   routes: [{
-    path: '/dashboard',
+    path: '/',
     name: 'dashboard',
     component: dashboard
   },
@@ -20,15 +18,5 @@ export default new Router({
     path: '/jobs',
     name: 'jobs',
     component: jobs
-  },
-  {
-    path: '/users',
-    name: 'users',
-    component: users
-  },
-  {
-    path: '/runners',
-    name: 'runners',
-    component: runners
   }]
 })
