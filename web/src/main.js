@@ -8,6 +8,8 @@ import BootstrapVue from 'bootstrap-vue'
 Vue.use(BootstrapVue)
 
 Vue.config.productionTip = false
+Vue.API_URI = Vue.prototype.API_URI = 'http://localhost:5000'
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

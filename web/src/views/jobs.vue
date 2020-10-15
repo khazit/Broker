@@ -12,12 +12,6 @@
               <b-button v-b-modal.job-modal align-self="end" variant="dark" size="sm">
                 <i class="mdi mdi-database-plus"></i>New Job
               </b-button>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris in consectetur lorem. Suspendisse arcu ex,
-                condimentum eget arcu porttitor, bibendum tristique magna. Curabitur quis malesuada sem. Nulla facilisi.
-                Aliquam erat volutpat. Suspendisse rhoncus viverra quam, sit amet accumsan purus condimentum ut.
-                Proin in accumsan ligula. Sed et elit quis leo.
-              </p>
               <b-modal ref="addJobModal"
                        id="job-modal"
                        title="Create a new job"
@@ -137,16 +131,21 @@
                           </tbody>
                         </div>
                         <span v-if="job.status > 3">
-                          <b-btn :href="'http://localhost:5000/jobs/'+job.identifier+'/logs'" variant="primary" size="sm" class="btn-fw">Download logs</b-btn>
+                          <b-btn @click="downloadLogFile(job.identifier)" variant="primary" size="sm" class="btn-fw">Download logs</b-btn>
                         </span>
                       </b-modal>
                     </td>
                     <td>
                         <b-button v-b-modal="'modalmd' + job.identifier" variant="secondary"><i class="mdi mdi-information "></i>Info</b-button>
-                        <b-button @click="onRemoveJob(job)" variant="danger"><i class="mdi mdi-close"></i>Cancel</b-button>
-                        <span v-if="job.status == 4 || job.status == 5">
-                          <b-button variant="dark"><i class="mdi mdi-loop"></i>Reset</b-button>
-                        </span>
+                        <b-dropdown id="actions" text="Actions" variant="primary">
+                          <b-dropdown-item @click="onRemoveJob(job)"><i class="mdi mdi-close"></i> Cancel</b-dropdown-item>
+                          <span v-if="job.status == 4 || job.status == 5">
+                            <b-dropdown-item variant="dark"><i class="mdi mdi-loop"></i> Reset</b-dropdown-item>
+                          </span>
+                          <span v-else>
+                            <b-dropdown-item disabled><i class="mdi mdi-loop"></i> Reset</b-dropdown-item>
+                          </span>
+                        </b-dropdown>
                     </td>
                   </tr>
                 </tbody>
@@ -180,7 +179,7 @@ export default {
   },
   methods: {
     getJobs () {
-      const path = 'http://localhost:5000/jobs'
+      const path = this.API_URI + '/jobs'
       axios.get(path)
         .then((res) => {
           this.jobs = res.data
@@ -194,7 +193,7 @@ export default {
         })
     },
     addJob (payload) {
-      const path = 'http://localhost:5000/jobs'
+      const path = this.API_URI + '/jobs'
       axios.post(path, payload)
         .then(() => {
           // update page with GET request
@@ -223,7 +222,7 @@ export default {
       this.initForm()
     },
     removeJob (jobID) {
-      const path = `http://localhost:5000/jobs/${jobID}`
+      const path = this.API_URI + `/jobs/${jobID}`
       axios.delete(path)
         .then(() => {
           this.getJobs()
@@ -242,6 +241,18 @@ export default {
     formatEpoch (epoch) {
       var date = new Date(epoch * 1000)
       return moment(date).format('DD/MM/YYYY - HH:mm:ss')
+    },
+    downloadLogFile (jobID) {
+      const path = this.API_URI + `/jobs/${jobID}/logs`
+      axios.get(path)
+        .then((response) => {
+          var fileURL = window.URL.createObjectURL(new Blob([response.data]))
+          var fileLink = document.createElement('a')
+          fileLink.href = fileURL
+          fileLink.setAttribute('download', 'logs.txt')
+          document.body.appendChild(fileLink)
+          fileLink.click()
+        })
     }
   }
 }
