@@ -18,8 +18,8 @@ jobs:
         run: poetry install
         working-directory: ./api
       - name: Run pylint
-        run: poetry pylint broker *.py --ignore setup.py 
+        run: poetry run pylint broker *.py --ignore setup.py 
         working-directory: ./api
       - name: Run tests
-        run: poetry pytest . --cov=broker
+        run: poetry run pytest . --cov=broker
         working-directory: ./api
