@@ -13,10 +13,10 @@ jobs:
         with:
           python-version: 3.7
       - name: Install poetry
-        uses: dschep/install-poetry-action@v1.3
+        uses: pip install poetry
       - name: Install dependencies
-        run: ~/.poetry/bin/poetry install
+        run: poetry install
         working-directory: ./runner
       - name: Run pylint
-        run: pylint *.py --ignore setup.py 
+        run: poetry run pylint *.py --ignore setup.py 
         working-directory: ./runner
