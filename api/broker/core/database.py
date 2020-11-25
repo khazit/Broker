@@ -23,8 +23,8 @@ class DataBaseManager():
     def __init__(self, sqlite_file="data.db"):
         self.sqlite_file = sqlite_file
         self.engine = create_engine(f"sqlite:///{self.sqlite_file}")
-        Session = scoped_session(sessionmaker(bind=self.engine))
-        self.session = Session()
+        session = scoped_session(sessionmaker(bind=self.engine))
+        self.session = session()
         Base.metadata.create_all(self.engine)  # Create db if needed
 
 
