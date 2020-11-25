@@ -22,6 +22,7 @@ class DevConfig(Config):
     DEBUG = True
     DATABASE_URI = "/data/data.db"
     STORAGE_URI = "/data"
+    LOGFILE = "/data/out.log"
 
 
 class TestConfig(Config):
