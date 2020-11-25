@@ -2,15 +2,13 @@
 
 
 from sqlalchemy import create_engine, func
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 from broker.core.models import Base, Job, Event, LogFile
 from broker.core.utils import JobStatus
 
 
 # pylint: disable=no-member
-
-Session = sessionmaker()
 
 
 class DataBaseManager():
@@ -25,9 +23,10 @@ class DataBaseManager():
     def __init__(self, sqlite_file="data.db"):
         self.sqlite_file = sqlite_file
         self.engine = create_engine(f"sqlite:///{self.sqlite_file}")
-        Session.configure(bind=self.engine)  # Bind engine to session
-        Base.metadata.create_all(self.engine)  # Create db if needed
+        Session = scoped_session(sessionmaker(bind=self.engine))
         self.session = Session()
+        Base.metadata.create_all(self.engine)  # Create db if needed
+
 
     # ------------------------------ Jobs ------------------------------ #
 
