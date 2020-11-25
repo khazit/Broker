@@ -12,14 +12,14 @@ from broker import config
 
 
 if os.environ["FLASK_ENV"] == "development":
-    app_config = config.DevConfig
+    AppConfig = config.DevConfig
 elif os.environ["FLASK_ENV"] == "production":
-    app_config = config.ProdConfig
+    AppConfig = config.ProdConfig
 
-app = create_app(app_config)
+app = create_app(AppConfig)
 
 logging.basicConfig(
-    filename=app_config.LOGFILE,
+    filename=AppConfig.LOGFILE,
     filemode="a",
     format="%(asctime)s %(name)s %(levelname)-2s %(message)s",
     level=logging.INFO,
