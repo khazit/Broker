@@ -13,7 +13,7 @@ jobs:
         with:
           python-version: 3.7
       - name: Install poetry
-        uses: pip install poetry
+        run: pip install poetry
       - name: Install dependencies
         run: poetry install
         working-directory: ./runner
